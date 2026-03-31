@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kompres PDF ke 100KB</title>
+<title>Kompres PDF - Ukuran Custom</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -11,146 +11,132 @@
   --red: #e8302a; --red-dark: #c42520; --red-glow: rgba(232,48,42,0.15);
   --bg: #0d0d0d; --surface: #161616; --surface2: #1e1e1e;
   --border: #2a2a2a; --text: #f0f0f0; --muted: #888; --success: #22c55e;
+  --warn: #f59e0b;
 }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
 /* NAV */
-nav { display: flex; align-items: center; gap: 1.5rem; padding: 0 2rem; height: 60px; border-bottom: 1px solid var(--border); background: rgba(13,13,13,0.95); position: sticky; top: 0; z-index: 100; flex-wrap: wrap; }
+nav { display: flex; align-items: center; gap: 1.5rem; padding: 0 2rem; height: 60px; border-bottom: 1px solid var(--border); background: rgba(13,13,13,0.97); position: sticky; top: 0; z-index: 100; }
 .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1rem; color: var(--red); text-decoration: none; }
-.logo-icon { width: 32px; height: 32px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.75rem; color: white; font-family: monospace; }
-nav ul { list-style: none; display: flex; gap: 0.2rem; flex-wrap: wrap; }
-nav ul li { position: relative; }
-nav ul li > a { display: block; padding: 0.4rem 0.75rem; font-size: 0.82rem; font-weight: 600; color: var(--muted); text-decoration: none; border-radius: 6px; cursor: pointer; transition: color 0.2s, background 0.2s; }
-nav ul li > a:hover, nav ul li > a.active { color: var(--text); background: var(--surface2); }
-nav ul li > a.active { color: var(--red); }
-.dropdown { display: none; position: absolute; top: calc(100% + 6px); left: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.4rem; min-width: 210px; z-index: 200; box-shadow: 0 12px 40px rgba(0,0,0,0.7); }
-.has-dropdown:hover .dropdown { display: block; }
-.dropdown a { display: block; padding: 0.45rem 0.75rem; font-size: 0.8rem; color: var(--muted); text-decoration: none; border-radius: 6px; }
-.dropdown a:hover { color: var(--text); background: var(--surface2); }
-.dropdown a.active-sub { color: var(--red); }
+.logo-icon { width: 32px; height: 32px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.75rem; color: white; font-family: monospace; flex-shrink: 0; }
 
 /* HERO */
-.hero { text-align: center; padding: 3.5rem 1rem 2rem; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 350px; background: radial-gradient(ellipse, rgba(232,48,42,0.1) 0%, transparent 70%); pointer-events: none; }
-.hero h1 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #aaa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+.hero { text-align: center; padding: 3rem 1rem 1.5rem; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 320px; background: radial-gradient(ellipse, rgba(232,48,42,0.09) 0%, transparent 70%); pointer-events: none; }
+.hero h1 { font-size: clamp(1.5rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #aaa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.45rem; }
 .hero h1 em { font-style: normal; -webkit-text-fill-color: var(--red); }
-.hero p { color: var(--muted); font-size: 0.88rem; max-width: 440px; margin: 0 auto; line-height: 1.6; }
+.hero p { color: var(--muted); font-size: 0.87rem; max-width: 420px; margin: 0 auto; line-height: 1.6; }
 
 /* TOOL */
-.tool-wrap { max-width: 660px; margin: 0 auto; padding: 0 1rem 4rem; }
+.tool-wrap { max-width: 680px; margin: 0 auto; padding: 0 1rem 4rem; }
 
 /* Upload Zone */
 .upload-zone {
-  border: 2px dashed var(--border);
-  border-radius: 16px;
-  padding: 2.8rem 1.5rem;
-  text-align: center;
-  background: var(--surface);
-  position: relative;
-  transition: border-color 0.25s, background 0.25s;
-  cursor: pointer;
-  overflow: hidden;
+  border: 2px dashed var(--border); border-radius: 16px;
+  padding: 2.5rem 1.5rem; text-align: center;
+  background: var(--surface); position: relative;
+  transition: border-color .25s, background .25s; cursor: pointer; overflow: hidden;
 }
 .upload-zone::after {
-  content: '';
-  position: absolute;
-  inset: 0;
+  content: ''; position: absolute; inset: 0;
   background: radial-gradient(ellipse at 50% 0%, var(--red-glow), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
+  opacity: 0; transition: opacity .3s; pointer-events: none;
 }
 .upload-zone.drag-active { border-color: var(--red); background: var(--surface2); }
-.upload-zone.drag-active::after { opacity: 1; }
+.upload-zone.drag-active::after, .upload-zone:hover::after { opacity: 1; }
 .upload-zone:hover { border-color: #444; }
-
-.upload-icon-wrap { width: 58px; height: 58px; background: var(--surface2); border: 2px solid var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.7rem; transition: border-color 0.25s, transform 0.25s; }
+.upload-icon-wrap { width: 56px; height: 56px; background: var(--surface2); border: 2px solid var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.6rem; transition: border-color .25s, transform .25s; }
 .upload-zone:hover .upload-icon-wrap, .upload-zone.drag-active .upload-icon-wrap { border-color: var(--red); transform: translateY(-3px); }
-.upload-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
-.upload-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.2rem; }
-
-.btn-pick {
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  padding: 0.65rem 1.5rem;
-  background: var(--red); color: #fff;
-  font-family: inherit; font-size: 0.85rem; font-weight: 700;
-  border: none; border-radius: 8px; cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
-  position: relative; z-index: 1;
-}
+.upload-title { font-size: 0.93rem; font-weight: 700; margin-bottom: 0.3rem; }
+.upload-sub { font-size: 0.77rem; color: var(--muted); margin-bottom: 1.2rem; }
+.btn-pick { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.4rem; background: var(--red); color: #fff; font-family: inherit; font-size: 0.84rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: background .2s, transform .15s; position: relative; z-index: 1; }
 .btn-pick:hover { background: var(--red-dark); transform: translateY(-1px); }
 
 /* File list */
-#file-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
-.file-item { display: flex; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; animation: fadeSlide 0.3s ease; }
-@keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.file-icon { font-size: 1.5rem; flex-shrink: 0; }
+#file-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.55rem; }
+.file-item { display: flex; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; animation: fadeSlide .3s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+.file-icon { font-size: 1.4rem; flex-shrink: 0; }
 .file-meta { flex: 1; min-width: 0; }
-.file-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.file-size { font-size: 0.74rem; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; }
-.file-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem; padding: 0.3rem; border-radius: 4px; flex-shrink: 0; transition: color 0.2s; }
+.file-name { font-size: 0.84rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-size { font-size: 0.73rem; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; }
+.file-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem; padding: 0.3rem; border-radius: 4px; flex-shrink: 0; transition: color .2s; }
 .file-remove:hover { color: var(--red); }
 
-/* Controls bar */
-.ctrl-bar { display: none; margin-top: 1rem; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; flex-wrap: wrap; }
-.ctrl-label { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
-.badge { background: var(--red); color: #fff; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 6px; }
-.ctrl-note { font-size: 0.75rem; color: var(--muted); margin-left: auto; }
+/* Target size controls */
+.target-panel {
+  display: none; margin-top: 1rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 1.3rem 1.4rem; animation: fadeSlide .3s ease;
+}
+.target-panel h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 1rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+.target-panel h3 span { font-size: 0.72rem; font-weight: 500; color: var(--muted); }
+
+/* Unit toggle */
+.unit-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+.unit-label { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-right: 0.25rem; }
+.unit-btn { padding: 0.35rem 0.9rem; font-family: inherit; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: var(--surface2); color: var(--muted); transition: all .2s; }
+.unit-btn.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+/* Slider + input row */
+.slider-row { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.75rem; }
+.size-slider { flex: 1; -webkit-appearance: none; appearance: none; height: 5px; border-radius: 99px; background: var(--surface2); outline: none; cursor: pointer; }
+.size-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--red); cursor: pointer; border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--red); transition: transform .15s; }
+.size-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.size-slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--red); cursor: pointer; border: 3px solid var(--bg); }
+
+.size-input-wrap { display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0; }
+.size-input { width: 80px; padding: 0.4rem 0.6rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text); text-align: right; outline: none; transition: border-color .2s; }
+.size-input:focus { border-color: var(--red); }
+.size-unit-label { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+
+/* Info row under slider */
+.slider-info { display: flex; justify-content: space-between; align-items: center; font-size: 0.73rem; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 0.3rem; }
+.slider-info .target-display { color: var(--text); font-weight: 700; }
+
+/* Warning */
+.size-warning { display: none; margin-top: 0.6rem; padding: 0.55rem 0.85rem; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; font-size: 0.78rem; color: var(--warn); }
+
+/* Quick presets */
+.presets { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--border); }
+.preset-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-right: 0.25rem; align-self: center; }
+.preset-btn { padding: 0.3rem 0.7rem; font-family: 'Space Mono', monospace; font-size: 0.72rem; font-weight: 700; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: var(--surface2); color: var(--muted); transition: all .2s; }
+.preset-btn:hover { border-color: var(--red); color: var(--red); }
+.preset-btn.active { border-color: var(--red); color: var(--red); background: rgba(232,48,42,0.08); }
 
 /* Compress button */
-.btn-compress {
-  display: none; width: 100%; margin-top: 1rem;
-  padding: 0.9rem; font-family: inherit; font-size: 1rem; font-weight: 800;
-  background: linear-gradient(135deg, var(--red), #c42520);
-  color: #fff; border: none; border-radius: 10px; cursor: pointer;
-  box-shadow: 0 4px 24px rgba(232,48,42,0.35);
-  transition: opacity 0.2s, transform 0.15s;
-}
+.btn-compress { display: none; width: 100%; margin-top: 1rem; padding: 0.88rem; font-family: inherit; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, var(--red), #c42520); color: #fff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 24px rgba(232,48,42,0.3); transition: opacity .2s, transform .15s; }
 .btn-compress:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
 .btn-compress:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 /* Progress */
 .progress-wrap { display: none; margin-top: 1rem; }
-.progress-bg { background: var(--surface2); border-radius: 99px; height: 7px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--red); border-radius: 99px; width: 0%; transition: width 0.35s ease; }
-.progress-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; text-align: center; font-family: 'Space Mono', monospace; }
+.progress-bg { background: var(--surface2); border-radius: 99px; height: 6px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--red); border-radius: 99px; width: 0%; transition: width .35s ease; }
+.progress-label { font-size: 0.77rem; color: var(--muted); margin-top: 0.5rem; text-align: center; font-family: 'Space Mono', monospace; }
 
 /* Results */
 #results { margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.75rem; }
-.result-card { display: flex; align-items: center; gap: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; animation: fadeSlide 0.4s ease; }
+.result-card { display: flex; align-items: center; gap: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; animation: fadeSlide .4s ease; }
 .result-card.ok { border-color: rgba(34,197,94,0.3); }
 .result-card.fail { border-color: rgba(232,48,42,0.3); }
 .result-info { flex: 1; min-width: 0; }
-.result-name { font-size: 0.85rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.3rem; }
-.result-stat { font-size: 0.75rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+.result-name { font-size: 0.84rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.3rem; }
+.result-stat { font-size: 0.74rem; color: var(--muted); font-family: 'Space Mono', monospace; line-height: 1.6; }
 .result-stat .ok-c { color: var(--success); }
 .result-stat .err-c { color: var(--red); }
-.btn-dl { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.5rem 1rem; background: var(--success); color: #fff; font-family: inherit; font-size: 0.8rem; font-weight: 700; border: none; border-radius: 7px; cursor: pointer; text-decoration: none; flex-shrink: 0; transition: opacity 0.2s; }
+.btn-dl { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.5rem 1rem; background: var(--success); color: #fff; font-family: inherit; font-size: 0.79rem; font-weight: 700; border: none; border-radius: 7px; cursor: pointer; text-decoration: none; flex-shrink: 0; transition: opacity .2s; white-space: nowrap; }
 .btn-dl:hover { opacity: 0.82; }
 
-/* Info */
-.info { max-width: 660px; margin: 1rem auto 0; padding: 0 1rem 3rem; }
-.info h2 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.9rem; }
-.steps { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem; }
-.step { display: flex; align-items: flex-start; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; }
-.step-n { width: 24px; height: 24px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
-.step-t { font-size: 0.84rem; color: var(--muted); line-height: 1.55; }
-.feats { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.6rem; }
-.feat { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; font-weight: 600; color: var(--muted); }
-.feat-dot { width: 7px; height: 7px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
-
 /* Footer */
-footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: center; }
-.footer-brand { font-weight: 800; color: var(--red); font-size: 0.95rem; margin-bottom: 0.75rem; }
-.footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.75rem; }
-.footer-links a { font-size: 0.78rem; color: var(--muted); text-decoration: none; }
-.footer-links a:hover { color: var(--text); }
+footer { border-top: 1px solid var(--border); padding: 1.8rem 1rem; text-align: center; }
 .footer-copy { font-size: 0.74rem; color: #555; }
 
 /* Toast */
-.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1.2rem; font-size: 0.83rem; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 9999; transform: translateY(16px); opacity: 0; transition: all 0.3s; pointer-events: none; }
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1.2rem; font-size: 0.82rem; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 9999; transform: translateY(16px); opacity: 0; transition: all .3s; pointer-events: none; max-width: 280px; }
 .toast.show { transform: none; opacity: 1; }
 .toast.err { border-color: var(--red); color: var(--red); }
+.toast.ok  { border-color: var(--success); color: var(--success); }
 </style>
 </head>
 <body>
@@ -160,34 +146,17 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
     <div class="logo-icon">P7</div>
     PDF TOOL
   </a>
-  <ul>
-    <li><a href="#">Gabungkan PDF</a></li>
-    <li class="has-dropdown">
-      <a href="#" class="active">Kompres PDF ▾</a>
-      <div class="dropdown">
-        <a href="#" class="active-sub">⬤ Kompres PDF 100KB</a>
-        <a href="#">Kompres PDF 200KB</a>
-        <a href="#">Kompres PDF 500KB</a>
-        <a href="#">Kompres PDF 1MB</a>
-        <a href="#">Kompres PDF 2MB</a>
-        <a href="#">Kompres ke ukuran bebas</a>
-      </div>
-    </li>
-    <li><a href="#">Perbesar PDF</a></li>
-    <li><a href="#">Perkecil PDF</a></li>
-    <li><a href="#">Foto ke PDF</a></li>
-  </ul>
 </nav>
 
 <div class="hero">
-  <h1>Kompres PDF ke <em>100KB</em></h1>
-  <p>Kurangi ukuran PDF kamu menjadi 100KB atau lebih kecil. Gratis, cepat, dan bekerja langsung di browser.</p>
+  <h1>Kompres PDF <em>Ukuran Custom</em></h1>
+  <p>Tentukan sendiri ukuran target PDF kamu. Mendukung KB atau MB, dan ukuran harus lebih kecil dari file asli.</p>
 </div>
 
 <div class="tool-wrap">
-  <!-- File input MUST be outside upload-zone to avoid event conflicts -->
-  <input type="file" id="file-input" accept="application/pdf" multiple style="display:none; position:absolute; left:-9999px;">
+  <input type="file" id="file-input" accept="application/pdf" multiple style="display:none;position:absolute;left:-9999px;">
 
+  <!-- Upload Zone -->
   <div class="upload-zone" id="upload-zone">
     <div class="upload-icon-wrap">📄</div>
     <div class="upload-title">Pilih atau Seret &amp; Jatuhkan PDF di Sini</div>
@@ -197,10 +166,45 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
 
   <div id="file-list"></div>
 
-  <div class="ctrl-bar" id="ctrl-bar">
-    <span class="ctrl-label">Ukuran Target:</span>
-    <span class="badge">100 KB</span>
-    <span class="ctrl-note">⚠️ Maks 3 file</span>
+  <!-- Target Size Panel -->
+  <div class="target-panel" id="target-panel">
+    <h3>🎯 Ukuran Target &nbsp;<span>harus lebih kecil dari ukuran asli</span></h3>
+
+    <!-- Unit toggle -->
+    <div class="unit-row">
+      <span class="unit-label">Satuan:</span>
+      <button class="unit-btn active" id="unit-kb" type="button">KB</button>
+      <button class="unit-btn" id="unit-mb" type="button">MB</button>
+    </div>
+
+    <!-- Slider + number input -->
+    <div class="slider-row">
+      <input type="range" class="size-slider" id="size-slider" min="10" max="1000" step="1" value="100">
+      <div class="size-input-wrap">
+        <input type="number" class="size-input" id="size-input" value="100" min="1">
+        <span class="size-unit-label" id="unit-display">KB</span>
+      </div>
+    </div>
+    <div class="slider-info">
+      <span>Min: <span id="slider-min-label">10 KB</span></span>
+      <span class="target-display">Target: <span id="target-display">100 KB</span></span>
+      <span>Maks: <span id="slider-max-label">—</span></span>
+    </div>
+
+    <div class="size-warning" id="size-warning">
+      ⚠️ Ukuran target harus lebih kecil dari file asli!
+    </div>
+
+    <!-- Quick presets -->
+    <div class="presets">
+      <span class="preset-label">Preset:</span>
+      <button class="preset-btn" data-kb="50"   type="button">50 KB</button>
+      <button class="preset-btn active" data-kb="100"  type="button">100 KB</button>
+      <button class="preset-btn" data-kb="200"  type="button">200 KB</button>
+      <button class="preset-btn" data-kb="500"  type="button">500 KB</button>
+      <button class="preset-btn" data-kb="1024" type="button">1 MB</button>
+      <button class="preset-btn" data-kb="2048" type="button">2 MB</button>
+    </div>
   </div>
 
   <button class="btn-compress" id="btn-compress" type="button">🗜️ Kompres PDF</button>
@@ -213,33 +217,8 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
   <div id="results"></div>
 </div>
 
-<div class="info">
-  <h2>Cara Kompres PDF ke 100KB</h2>
-  <div class="steps">
-    <div class="step"><div class="step-n">1</div><div class="step-t">Klik tombol <strong>Pilih PDF</strong> atau seret file PDF ke area unggah.</div></div>
-    <div class="step"><div class="step-n">2</div><div class="step-t">Pilih hingga 3 file PDF yang ingin dikompres.</div></div>
-    <div class="step"><div class="step-n">3</div><div class="step-t">Klik tombol <strong>Kompres PDF</strong> dan tunggu proses selesai.</div></div>
-    <div class="step"><div class="step-n">4</div><div class="step-t">Unduh hasil PDF yang telah dikompres ke ukuran &le; 100KB.</div></div>
-  </div>
-  <h2>Keunggulan</h2>
-  <div class="feats">
-    <div class="feat"><div class="feat-dot"></div>Mudah Digunakan</div>
-    <div class="feat"><div class="feat-dot"></div>Kompresi Cepat</div>
-    <div class="feat"><div class="feat-dot"></div>Gratis &amp; Online</div>
-    <div class="feat"><div class="feat-dot"></div>Target 100KB Presisi</div>
-    <div class="feat"><div class="feat-dot"></div>Proses di Browser</div>
-    <div class="feat"><div class="feat-dot"></div>Privasi Terjaga</div>
-  </div>
-</div>
-
 <footer>
-  <div class="footer-brand">⬛ PDF TOOL</div>
-  <div class="footer-links">
-    <a href="#">Kebijakan Privasi</a>
-    <a href="#">Syarat Penggunaan</a>
-    <a href="#">English Version</a>
-  </div>
-  <div class="footer-copy">Dibuat dengan ♥ untuk 🇮🇩 Indonesia</div>
+  <div class="footer-copy">Dibuat dengan ♥ untuk 🇮🇩 Indonesia &nbsp;·&nbsp; Proses 100% di browser, file tidak diunggah ke server</div>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -252,15 +231,17 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-  var TARGET_BYTES = 100 * 1024;
-  var MAX_FILES    = 3;
-  var files        = [];
+  var MAX_FILES = 3;
+  var files     = [];
+  var unitKB    = true;   // true = KB, false = MB
+  var targetKB  = 100;    // always stored in KB internally
 
+  /* ── Elements ── */
   var fileInput     = document.getElementById('file-input');
   var uploadZone    = document.getElementById('upload-zone');
   var btnPick       = document.getElementById('btn-pick');
   var fileListEl    = document.getElementById('file-list');
-  var ctrlBar       = document.getElementById('ctrl-bar');
+  var targetPanel   = document.getElementById('target-panel');
   var btnCompress   = document.getElementById('btn-compress');
   var progressWrap  = document.getElementById('progress-wrap');
   var progressFill  = document.getElementById('progress-fill');
@@ -268,79 +249,166 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
   var resultsEl     = document.getElementById('results');
   var toastEl       = document.getElementById('toast');
 
-  // ── Open file picker ──
-  function openPicker() {
-    fileInput.click();
-  }
+  var unitKbBtn     = document.getElementById('unit-kb');
+  var unitMbBtn     = document.getElementById('unit-mb');
+  var sizeSlider    = document.getElementById('size-slider');
+  var sizeInput     = document.getElementById('size-input');
+  var unitDisplay   = document.getElementById('unit-display');
+  var targetDisplay = document.getElementById('target-display');
+  var sliderMinLbl  = document.getElementById('slider-min-label');
+  var sliderMaxLbl  = document.getElementById('slider-max-label');
+  var sizeWarning   = document.getElementById('size-warning');
+  var presetBtns    = document.querySelectorAll('.preset-btn');
 
-  btnPick.addEventListener('click', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    openPicker();
+  /* ── File picker ── */
+  btnPick.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fileInput.click(); });
+  uploadZone.addEventListener('click', function (e) { if (e.target === btnPick || btnPick.contains(e.target)) return; fileInput.click(); });
+  fileInput.addEventListener('change', function () {
+    if (this.files && this.files.length) addFiles(Array.from(this.files));
+    this.value = '';
   });
 
-  uploadZone.addEventListener('click', function (e) {
-    // Only open picker if click is NOT on the button (button handles itself)
-    if (e.target === btnPick || btnPick.contains(e.target)) return;
-    openPicker();
-  });
-
-  // ── File selected from dialog ──
-  fileInput.addEventListener('change', function (e) {
-    var chosen = Array.from(e.target.files || []);
-    if (chosen.length) addFiles(chosen);
-    fileInput.value = ''; // reset so same file triggers change again
-  });
-
-  // ── Drag & drop ──
-  uploadZone.addEventListener('dragover', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    uploadZone.classList.add('drag-active');
-  });
-
-  uploadZone.addEventListener('dragleave', function (e) {
-    e.preventDefault();
-    uploadZone.classList.remove('drag-active');
-  });
-
+  /* ── Drag & Drop ── */
+  uploadZone.addEventListener('dragover', function (e) { e.preventDefault(); e.stopPropagation(); this.classList.add('drag-active'); });
+  uploadZone.addEventListener('dragleave', function (e) { e.preventDefault(); this.classList.remove('drag-active'); });
   uploadZone.addEventListener('drop', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    uploadZone.classList.remove('drag-active');
-    var dropped = Array.from(e.dataTransfer.files).filter(function (f) {
-      return f.type === 'application/pdf';
-    });
-    if (!dropped.length) { showToast('Hanya file PDF yang diterima!', true); return; }
+    e.preventDefault(); e.stopPropagation(); this.classList.remove('drag-active');
+    var dropped = Array.from(e.dataTransfer.files).filter(function (f) { return f.type === 'application/pdf'; });
+    if (!dropped.length) { showToast('Hanya file PDF!', 'err'); return; }
     addFiles(dropped);
   });
 
-  // ── Compress trigger ──
-  btnCompress.addEventListener('click', function () {
-    compress();
+  /* ── Unit toggle ── */
+  unitKbBtn.addEventListener('click', function () {
+    if (unitKB) return;
+    unitKB = true;
+    unitKbBtn.classList.add('active'); unitMbBtn.classList.remove('active');
+    unitDisplay.textContent = 'KB';
+    refreshSliderBounds();
+    syncInputFromTarget();
+  });
+  unitMbBtn.addEventListener('click', function () {
+    if (!unitKB) return;
+    unitKB = false;
+    unitMbBtn.classList.add('active'); unitKbBtn.classList.remove('active');
+    unitDisplay.textContent = 'MB';
+    refreshSliderBounds();
+    syncInputFromTarget();
   });
 
-  // ── Add files ──
+  /* ── Slider ── */
+  sizeSlider.addEventListener('input', function () {
+    var v = parseFloat(this.value);
+    targetKB = unitKB ? v : Math.round(v * 1024);
+    syncInputFromTarget();
+    syncDisplays();
+    validateTarget();
+    highlightPreset();
+  });
+
+  /* ── Number input ── */
+  sizeInput.addEventListener('input', function () {
+    var v = parseFloat(this.value) || 0;
+    targetKB = unitKB ? v : Math.round(v * 1024);
+    clampSlider();
+    syncDisplays();
+    validateTarget();
+    highlightPreset();
+  });
+
+  /* ── Preset buttons ── */
+  presetBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var kb = parseInt(this.dataset.kb, 10);
+      targetKB = kb;
+      // Switch unit automatically
+      if (kb >= 1024 && !false) {
+        // stay in current unit, just update
+      }
+      refreshSliderBounds();
+      syncInputFromTarget();
+      syncDisplays();
+      validateTarget();
+      highlightPreset();
+    });
+  });
+
+  function highlightPreset() {
+    presetBtns.forEach(function (b) {
+      b.classList.toggle('active', parseInt(b.dataset.kb, 10) === targetKB);
+    });
+  }
+
+  /* ── Slider bounds based on current files + unit ── */
+  function refreshSliderBounds() {
+    var maxFileSizeKB = files.length
+      ? Math.floor(Math.max.apply(null, files.map(function (f) { return f.size / 1024; })))
+      : 10240;
+    var limitKB = Math.max(maxFileSizeKB - 1, 1);
+
+    if (unitKB) {
+      sizeSlider.min  = 10;
+      sizeSlider.max  = Math.min(limitKB, 9999);
+      sizeSlider.step = 1;
+      sliderMinLbl.textContent = '10 KB';
+      sliderMaxLbl.textContent = Math.min(limitKB, 9999) + ' KB';
+    } else {
+      var maxMB = Math.min(limitKB / 1024, 50);
+      sizeSlider.min  = 0.1;
+      sizeSlider.max  = maxMB.toFixed(1);
+      sizeSlider.step = 0.1;
+      sliderMinLbl.textContent = '0.1 MB';
+      sliderMaxLbl.textContent = maxMB.toFixed(1) + ' MB';
+    }
+    clampSlider();
+  }
+
+  function syncInputFromTarget() {
+    if (unitKB) {
+      sizeInput.value = targetKB;
+      sizeSlider.value = Math.min(Math.max(targetKB, parseFloat(sizeSlider.min)), parseFloat(sizeSlider.max));
+    } else {
+      var mb = (targetKB / 1024).toFixed(2);
+      sizeInput.value = mb;
+      sizeSlider.value = Math.min(Math.max(parseFloat(mb), parseFloat(sizeSlider.min)), parseFloat(sizeSlider.max));
+    }
+  }
+
+  function clampSlider() {
+    sizeSlider.value = Math.min(Math.max(parseFloat(sizeInput.value), parseFloat(sizeSlider.min)), parseFloat(sizeSlider.max));
+  }
+
+  function syncDisplays() {
+    var kb = targetKB;
+    var label = kb >= 1024 ? (kb / 1024).toFixed(2) + ' MB' : kb + ' KB';
+    targetDisplay.textContent = label;
+  }
+
+  function validateTarget() {
+    var valid = true;
+    files.forEach(function (f) {
+      if (targetKB * 1024 >= f.size) valid = false;
+    });
+    sizeWarning.style.display = (files.length && !valid) ? 'block' : 'none';
+    btnCompress.disabled = files.length > 0 && !valid;
+  }
+
+  /* ── Add / remove files ── */
   function addFiles(newFiles) {
     var added = 0;
     newFiles.forEach(function (f) {
-      if (files.length >= MAX_FILES) {
-        showToast('Maksimal 3 file sekaligus!', true);
-        return;
-      }
+      if (files.length >= MAX_FILES) { showToast('Maksimal 3 file!', 'err'); return; }
       var dup = files.some(function (x) { return x.name === f.name && x.size === f.size; });
       if (!dup) { files.push(f); added++; }
     });
-    if (added > 0) {
-      renderFileList();
-      resultsEl.innerHTML = '';
-    }
+    if (added) { renderFileList(); resultsEl.innerHTML = ''; refreshSliderBounds(); syncInputFromTarget(); syncDisplays(); validateTarget(); }
   }
 
   function removeFile(idx) {
     files.splice(idx, 1);
     renderFileList();
     resultsEl.innerHTML = '';
+    if (files.length) { refreshSliderBounds(); validateTarget(); }
   }
 
   function renderFileList() {
@@ -355,23 +423,30 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
           '<div class="file-size">' + fmtSize(f.size) + '</div>' +
         '</div>' +
         '<button class="file-remove" type="button" title="Hapus">&#x2715;</button>';
-      el.querySelector('.file-remove').addEventListener('click', function () {
-        removeFile(i);
-      });
+      el.querySelector('.file-remove').addEventListener('click', function () { removeFile(i); });
       fileListEl.appendChild(el);
     });
+
     var has = files.length > 0;
-    ctrlBar.style.display     = has ? 'flex'  : 'none';
-    btnCompress.style.display = has ? 'block' : 'none';
+    targetPanel.style.display  = has ? 'block' : 'none';
+    btnCompress.style.display  = has ? 'block' : 'none';
   }
 
-  // ── Compress loop ──
+  /* ── Compress ── */
+  btnCompress.addEventListener('click', function () { compress(); });
+
   function compress() {
     if (!files.length) return;
+    var targetBytes = targetKB * 1024;
+
+    // Validate all files
+    var anyInvalid = files.some(function (f) { return targetBytes >= f.size; });
+    if (anyInvalid) { showToast('Ukuran target harus lebih kecil dari file asli!', 'err'); return; }
+
     btnCompress.disabled = true;
-    resultsEl.innerHTML = '';
-    setProgress(0, 'Memulai kompresi...');
+    resultsEl.innerHTML  = '';
     progressWrap.style.display = 'block';
+    setProgress(0, 'Memulai kompresi...');
 
     var idx = 0;
     function next() {
@@ -383,57 +458,55 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
       }
       var f   = files[idx];
       var pct = Math.round((idx / files.length) * 88);
-      setProgress(pct, 'Memproses ' + (idx + 1) + ' dari ' + files.length + ': ' + f.name);
+      setProgress(pct, 'Memproses ' + (idx + 1) + '/' + files.length + ': ' + f.name);
       idx++;
-      compressPDF(f).then(function (res) {
-        appendResult(f, res, null);
-        next();
-      }).catch(function (err) {
-        appendResult(f, null, String(err && err.message ? err.message : err));
-        next();
-      });
+      compressPDF(f, targetBytes)
+        .then(function (res) { appendResult(f, res, null, targetBytes); next(); })
+        .catch(function (err) { appendResult(f, null, String(err && err.message ? err.message : err), targetBytes); next(); });
     }
     next();
   }
 
-  // ── Core compression ──
-  function compressPDF(file) {
+  /* ── Core: compress PDF to targetBytes ── */
+  function compressPDF(file, targetBytes) {
     return file.arrayBuffer().then(function (buf) {
       var origSize = buf.byteLength;
       return pdfjsLib.getDocument({ data: buf.slice(0) }).promise.then(function (pdfDoc) {
         var nPages = pdfDoc.numPages;
-        if (origSize <= TARGET_BYTES) {
-          return { blob: new Blob([buf], { type: 'application/pdf' }), origSize: origSize, finalSize: origSize, pages: nPages };
-        }
-        var ratio = TARGET_BYTES / origSize;
-        var scale = ratio < 0.08 ? 0.5 : ratio < 0.15 ? 0.65 : ratio < 0.3 ? 0.8 : 1.0;
-        return binarySearch(pdfDoc, nPages, scale, 0.05, 0.88, 10).then(function (blob) {
-          if (blob) return { blob: blob, origSize: origSize, finalSize: blob.size, pages: nPages };
-          // Retry with smaller scale
-          return binarySearch(pdfDoc, nPages, scale * 0.7, 0.05, 0.6, 8).then(function (blob2) {
-            var fallback = blob2;
-            if (!fallback) return renderPagesToBlob(pdfDoc, nPages, scale * 0.5, 0.05);
-            return fallback;
-          }).then(function (finalBlob) {
-            return { blob: finalBlob, origSize: origSize, finalSize: finalBlob.size, pages: nPages };
+        var ratio  = targetBytes / origSize;
+
+        // Initial scale heuristic
+        var scale = ratio < 0.05 ? 0.4
+                  : ratio < 0.10 ? 0.55
+                  : ratio < 0.20 ? 0.70
+                  : ratio < 0.40 ? 0.85
+                  : 1.0;
+
+        return binarySearch(pdfDoc, nPages, scale, 0.04, 0.92, 12, targetBytes)
+          .then(function (blob) {
+            if (blob) return { blob: blob, origSize: origSize, finalSize: blob.size, pages: nPages };
+            // Reduce scale and retry
+            scale *= 0.65;
+            return binarySearch(pdfDoc, nPages, scale, 0.04, 0.7, 10, targetBytes)
+              .then(function (blob2) {
+                var b = blob2 || null;
+                if (!b) return renderPagesToBlob(pdfDoc, nPages, scale * 0.5, 0.04)
+                              .then(function (fb) { return { blob: fb, origSize: origSize, finalSize: fb.size, pages: nPages }; });
+                return { blob: b, origSize: origSize, finalSize: b.size, pages: nPages };
+              });
           });
-        });
       });
     });
   }
 
-  function binarySearch(pdfDoc, nPages, scale, qLow, qHigh, iters) {
+  function binarySearch(pdfDoc, nPages, scale, qLow, qHigh, iters, targetBytes) {
     var bestBlob = null;
     function step(i, lo, hi) {
       if (i <= 0) return Promise.resolve(bestBlob);
       var q = (lo + hi) / 2;
       return renderPagesToBlob(pdfDoc, nPages, scale, q).then(function (blob) {
-        if (blob.size <= TARGET_BYTES) {
-          bestBlob = blob;
-          return step(i - 1, q, hi);
-        } else {
-          return step(i - 1, lo, q);
-        }
+        if (blob.size <= targetBytes) { bestBlob = blob; return step(i - 1, q, hi); }
+        else { return step(i - 1, lo, q); }
       });
     }
     return step(iters, qLow, qHigh);
@@ -441,46 +514,37 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
 
   function renderPagesToBlob(pdfDoc, nPages, scale, quality) {
     var images = [];
-    function renderPage(pg) {
+    function doPage(pg) {
       if (pg > nPages) return Promise.resolve();
       return pdfDoc.getPage(pg).then(function (page) {
         var vp = page.getViewport({ scale: scale });
         var canvas = document.createElement('canvas');
-        canvas.width  = Math.round(vp.width);
-        canvas.height = Math.round(vp.height);
+        canvas.width  = Math.max(1, Math.round(vp.width));
+        canvas.height = Math.max(1, Math.round(vp.height));
         return page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise.then(function () {
           images.push({ data: canvas.toDataURL('image/jpeg', quality), w: canvas.width, h: canvas.height });
-          return renderPage(pg + 1);
+          return doPage(pg + 1);
         });
       });
     }
-    return renderPage(1).then(function () {
+    return doPage(1).then(function () {
       return new Blob([buildPDF(images)], { type: 'application/pdf' });
     });
   }
 
+  /* ── Minimal PDF builder ── */
   function buildPDF(pages) {
-    var enc    = new TextEncoder();
-    var chunks = [];
-    var pos    = 0;
+    var enc = new TextEncoder();
+    var chunks = [], pos = 0;
+    function push(str) { var b = enc.encode(str); chunks.push(b); pos += b.length; }
+    function pushBin(u8) { chunks.push(u8); pos += u8.length; }
 
-    function push(str) {
-      var b = enc.encode(str);
-      chunks.push(b);
-      pos += b.length;
-    }
-    function pushBin(u8) {
-      chunks.push(u8);
-      pos += u8.length;
-    }
-
-    var nextId      = 1;
-    var pageTreeId  = nextId++;
-    var catalogId   = nextId++;
-    var imgIds      = pages.map(function () { return nextId++; });
-    var contIds     = pages.map(function () { return nextId++; });
-    var pageObjIds  = pages.map(function () { return nextId++; });
-    var offsets     = {};
+    var nextId     = 1;
+    var pageTreeId = nextId++; var catalogId = nextId++;
+    var imgIds     = pages.map(function () { return nextId++; });
+    var contIds    = pages.map(function () { return nextId++; });
+    var pageObjIds = pages.map(function () { return nextId++; });
+    var offsets    = {};
 
     push('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n');
 
@@ -488,118 +552,98 @@ footer { border-top: 1px solid var(--border); padding: 2rem 1rem; text-align: ce
       var bin  = atob(p.data.split(',')[1]);
       var imgU8 = new Uint8Array(bin.length);
       for (var j = 0; j < bin.length; j++) imgU8[j] = bin.charCodeAt(j);
-
       offsets[imgIds[i]] = pos;
-      push(imgIds[i] + ' 0 obj\n');
-      push('<< /Type /XObject /Subtype /Image /Width ' + p.w + ' /Height ' + p.h +
-           ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + imgU8.length + ' >>\n');
-      push('stream\n');
+      push(imgIds[i] + ' 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + p.w + ' /Height ' + p.h +
+           ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + imgU8.length + ' >>\nstream\n');
       pushBin(imgU8);
       push('\nendstream\nendobj\n');
     });
 
     pages.forEach(function (p, i) {
-      var ptW = (p.w * 72 / 96).toFixed(2);
-      var ptH = (p.h * 72 / 96).toFixed(2);
+      var ptW = (p.w * 72 / 96).toFixed(2), ptH = (p.h * 72 / 96).toFixed(2);
       var cs  = 'q ' + ptW + ' 0 0 ' + ptH + ' 0 0 cm /Im' + i + ' Do Q';
-
       offsets[contIds[i]] = pos;
       push(contIds[i] + ' 0 obj\n<< /Length ' + cs.length + ' >>\nstream\n' + cs + '\nendstream\nendobj\n');
-
       offsets[pageObjIds[i]] = pos;
-      push(pageObjIds[i] + ' 0 obj\n' +
-           '<< /Type /Page /Parent ' + pageTreeId + ' 0 R ' +
-           '/MediaBox [0 0 ' + ptW + ' ' + ptH + '] ' +
-           '/Contents ' + contIds[i] + ' 0 R ' +
-           '/Resources << /XObject << /Im' + i + ' ' + imgIds[i] + ' 0 R >> >> >>\n' +
-           'endobj\n');
+      push(pageObjIds[i] + ' 0 obj\n<< /Type /Page /Parent ' + pageTreeId + ' 0 R /MediaBox [0 0 ' + ptW + ' ' + ptH + '] /Contents ' + contIds[i] + ' 0 R /Resources << /XObject << /Im' + i + ' ' + imgIds[i] + ' 0 R >> >> >>\nendobj\n');
     });
 
     offsets[pageTreeId] = pos;
-    push(pageTreeId + ' 0 obj\n<< /Type /Pages /Kids [' +
-         pageObjIds.map(function (id) { return id + ' 0 R'; }).join(' ') +
-         '] /Count ' + pages.length + ' >>\nendobj\n');
-
+    push(pageTreeId + ' 0 obj\n<< /Type /Pages /Kids [' + pageObjIds.map(function (id) { return id + ' 0 R'; }).join(' ') + '] /Count ' + pages.length + ' >>\nendobj\n');
     offsets[catalogId] = pos;
     push(catalogId + ' 0 obj\n<< /Type /Catalog /Pages ' + pageTreeId + ' 0 R >>\nendobj\n');
 
-    var xrefPos = pos;
-    var maxId   = nextId - 1;
-    push('xref\n0 ' + (maxId + 1) + '\n');
-    push('0000000000 65535 f \n');
+    var xrefPos = pos, maxId = nextId - 1;
+    push('xref\n0 ' + (maxId + 1) + '\n0000000000 65535 f \n');
     for (var id = 1; id <= maxId; id++) {
       var off = offsets[id] !== undefined ? offsets[id] : 0;
       push(String(off).padStart(10, '0') + ' 00000 n \n');
     }
-    push('trailer\n<< /Size ' + (maxId + 1) + ' /Root ' + catalogId + ' 0 R >>\n');
-    push('startxref\n' + xrefPos + '\n%%EOF');
+    push('trailer\n<< /Size ' + (maxId + 1) + ' /Root ' + catalogId + ' 0 R >>\nstartxref\n' + xrefPos + '\n%%EOF');
 
     var total = chunks.reduce(function (a, c) { return a + c.length; }, 0);
-    var out   = new Uint8Array(total);
-    var off2  = 0;
+    var out = new Uint8Array(total); var off2 = 0;
     chunks.forEach(function (c) { out.set(c, off2); off2 += c.length; });
     return out;
   }
 
-  // ── Render result card ──
-  function appendResult(file, res, errMsg) {
+  /* ── Result card ── */
+  function appendResult(file, res, errMsg, targetBytes) {
     var el = document.createElement('div');
     if (errMsg || !res) {
       el.className = 'result-card fail';
       el.innerHTML =
         '<span style="font-size:1.4rem">&#x274C;</span>' +
-        '<div class="result-info">' +
-          '<div class="result-name">' + esc(file.name) + '</div>' +
-          '<div class="result-stat err-c">Gagal: ' + esc(errMsg || 'Error tidak diketahui') + '</div>' +
-        '</div>';
+        '<div class="result-info"><div class="result-name">' + esc(file.name) + '</div>' +
+        '<div class="result-stat err-c">Gagal: ' + esc(errMsg || 'Error tidak diketahui') + '</div></div>';
     } else {
-      var exceeded = res.finalSize > TARGET_BYTES;
+      var exceeded = res.finalSize > targetBytes;
       var saved    = ((1 - res.finalSize / res.origSize) * 100).toFixed(1);
       var url      = URL.createObjectURL(res.blob);
-      var dlName   = file.name.replace(/\.pdf$/i, '') + '_100kb.pdf';
+      var suffix   = targetKB >= 1024 ? (targetKB/1024).toFixed(0)+'mb' : targetKB+'kb';
+      var dlName   = file.name.replace(/\.pdf$/i, '') + '_' + suffix + '.pdf';
       el.className = 'result-card ok';
       el.innerHTML =
         '<span style="font-size:1.4rem">' + (exceeded ? '&#x26A0;&#xFE0F;' : '&#x2705;') + '</span>' +
-        '<div class="result-info">' +
-          '<div class="result-name">' + esc(file.name) + '</div>' +
-          '<div class="result-stat">' +
-            fmtSize(res.origSize) + ' &rarr; <span class="' + (exceeded ? 'err-c' : 'ok-c') + '">' + fmtSize(res.finalSize) + '</span>' +
-            ' &nbsp;&middot;&nbsp; ' + (exceeded ? 'Di atas 100KB (konten terlalu padat)' : 'Hemat ' + saved + '%') +
-            ' &nbsp;&middot;&nbsp; ' + res.pages + ' hal.' +
-          '</div>' +
-        '</div>' +
+        '<div class="result-info"><div class="result-name">' + esc(file.name) + '</div>' +
+        '<div class="result-stat">' +
+          fmtSize(res.origSize) + ' &rarr; <span class="' + (exceeded ? 'err-c' : 'ok-c') + '">' + fmtSize(res.finalSize) + '</span>' +
+          (exceeded
+            ? ' &nbsp;&middot;&nbsp; <span class="err-c">Tidak bisa capai target (konten terlalu padat)</span>'
+            : ' &nbsp;&middot;&nbsp; Hemat ' + saved + '%') +
+          ' &nbsp;&middot;&nbsp; ' + res.pages + ' hal.' +
+        '</div></div>' +
         '<a class="btn-dl" href="' + url + '" download="' + esc(dlName) + '">&#x2B07; Unduh</a>';
     }
     resultsEl.appendChild(el);
   }
 
-  // ── Utilities ──
+  /* ── Utilities ── */
   function setProgress(pct, label) {
-    progressFill.style.width   = pct + '%';
-    progressLabel.textContent  = label;
+    progressFill.style.width  = pct + '%';
+    progressLabel.textContent = label;
   }
 
   var toastTimer = null;
-  function showToast(msg, err) {
+  function showToast(msg, type) {
     toastEl.textContent = msg;
-    toastEl.className   = 'toast' + (err ? ' err' : '') + ' show';
+    toastEl.className   = 'toast ' + (type || '') + ' show';
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { toastEl.className = 'toast'; }, 3000);
   }
 
   function fmtSize(b) {
-    if (b < 1024)        return b + ' B';
-    if (b < 1048576)     return (b / 1024).toFixed(1) + ' KB';
+    if (b < 1024)    return b + ' B';
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
     return (b / 1048576).toFixed(2) + ' MB';
   }
 
   function esc(s) {
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  // Init display
+  syncDisplays();
 
 })();
 </script>
