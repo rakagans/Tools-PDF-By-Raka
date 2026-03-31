@@ -3,959 +3,826 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Toolkit — Kompres & Edit Berkas PDF Online Gratis</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Kompres dan Edit Berkas PDF | Pi7 PDF Tool</title>
+<meta name="description" content="Pi7 PDF Tool adalah kumpulan alat daring seperti Kompresor PDF dan alat konversi PDF (PDF ke JPG, dll).">
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --red: #E8341A;
-    --red-dark: #c42a12;
-    --bg: #0f0f10;
-    --card: #181819;
-    --card2: #202022;
-    --border: #2a2a2d;
-    --text: #f0ece8;
-    --muted: #888;
-    --accent: #ff6b47;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
-
-  /* NAV */
-  nav { display:flex; align-items:center; justify-content:space-between; padding:18px 40px; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(15,15,16,.95); backdrop-filter:blur(10px); z-index:100; }
-  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem; letter-spacing:-.02em; color:var(--text); text-decoration:none; display:flex; align-items:center; gap:10px; }
-  .logo span { background:var(--red); color:#fff; padding:3px 9px; border-radius:6px; font-size:.85rem; font-weight:700; letter-spacing:.08em; }
-  .nav-links { display:flex; gap:8px; flex-wrap:wrap; }
-  .nav-links a { color:var(--muted); text-decoration:none; font-size:.88rem; padding:6px 14px; border-radius:20px; border:1px solid transparent; transition:all .2s; }
-  .nav-links a:hover { color:var(--text); border-color:var(--border); }
-
-  /* HERO */
-  .hero { text-align:center; padding:80px 40px 60px; position:relative; overflow:hidden; }
-  .hero::before { content:''; position:absolute; top:-100px; left:50%; transform:translateX(-50%); width:600px; height:600px; background:radial-gradient(circle, rgba(232,52,26,.15) 0%, transparent 70%); pointer-events:none; }
-  .hero h1 { font-family:'Syne',sans-serif; font-size:clamp(2.2rem,5vw,3.8rem); font-weight:800; line-height:1.1; letter-spacing:-.03em; margin-bottom:20px; }
-  .hero h1 em { color:var(--red); font-style:normal; }
-  .hero p { color:var(--muted); font-size:1.05rem; max-width:560px; margin:0 auto 40px; line-height:1.7; }
-  .badge { display:inline-flex; align-items:center; gap:7px; background:rgba(232,52,26,.12); border:1px solid rgba(232,52,26,.3); color:var(--accent); padding:7px 16px; border-radius:30px; font-size:.82rem; font-weight:500; margin-bottom:28px; }
-  .badge::before { content:'●'; font-size:.55rem; animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-  /* TOOLS GRID */
-  .section { padding:0 40px 80px; max-width:1200px; margin:0 auto; }
-  .section-title { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin-bottom:28px; display:flex; align-items:center; gap:12px; }
-  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
-
-  .tools-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
-  .tool-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:28px; cursor:pointer; text-decoration:none; color:inherit; display:block; transition:all .25s; position:relative; overflow:hidden; }
-  .tool-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(232,52,26,.07) 0%, transparent 60%); opacity:0; transition:opacity .25s; }
-  .tool-card:hover { border-color:rgba(232,52,26,.5); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.4); }
-  .tool-card:hover::before { opacity:1; }
-  .tool-icon { width:48px; height:48px; background:rgba(232,52,26,.12); border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; font-size:1.5rem; }
-  .tool-card h3 { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700; margin-bottom:8px; }
-  .tool-card p { color:var(--muted); font-size:.85rem; line-height:1.55; }
-  .tool-card .open-btn { display:inline-flex; align-items:center; gap:6px; margin-top:18px; color:var(--red); font-size:.82rem; font-weight:600; }
-  .tool-card .open-btn svg { transition:transform .2s; }
-  .tool-card:hover .open-btn svg { transform:translateX(4px); }
-
-  /* MODAL */
-  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:200; align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto; }
-  .modal-overlay.open { display:flex; }
-  .modal { background:var(--card); border:1px solid var(--border); border-radius:18px; width:100%; max-width:680px; padding:36px; position:relative; margin:auto; animation:slideUp .3s ease; }
-  @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-  .modal-close { position:absolute; top:18px; right:18px; background:var(--card2); border:1px solid var(--border); color:var(--muted); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; transition:all .2s; }
-  .modal-close:hover { color:var(--text); border-color:var(--red); }
-  .modal h2 { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; margin-bottom:8px; }
-  .modal .subtitle { color:var(--muted); font-size:.9rem; margin-bottom:28px; line-height:1.6; }
-
-  /* DROPZONE */
-  .dropzone { border:2px dashed var(--border); border-radius:14px; padding:50px 30px; text-align:center; cursor:pointer; transition:all .25s; background:var(--card2); position:relative; }
-  .dropzone:hover, .dropzone.dragover { border-color:var(--red); background:rgba(232,52,26,.06); }
-  .dropzone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-  .dropzone-icon { font-size:2.5rem; margin-bottom:14px; }
-  .dropzone h4 { font-family:'Syne',sans-serif; font-size:1rem; margin-bottom:6px; }
-  .dropzone p { color:var(--muted); font-size:.83rem; }
-
-  /* CONTROLS */
-  .controls { margin-top:22px; display:flex; flex-direction:column; gap:14px; }
-  label.ctrl-label { font-size:.85rem; color:var(--muted); font-weight:500; display:block; margin-bottom:5px; }
-  input[type=range] { width:100%; accent-color:var(--red); cursor:pointer; }
-  input[type=number], input[type=text], select { background:var(--card2); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:10px 14px; font-size:.9rem; width:100%; outline:none; font-family:inherit; transition:border-color .2s; }
-  input[type=number]:focus, input[type=text]:focus, select:focus { border-color:var(--red); }
-  .row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
-  .row > * { flex:1; min-width:120px; }
-
-  /* BUTTONS */
-  .btn-primary { background:var(--red); color:#fff; border:none; border-radius:10px; padding:13px 28px; font-size:.95rem; font-weight:600; font-family:'Syne',sans-serif; cursor:pointer; width:100%; margin-top:10px; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
-  .btn-primary:hover { background:var(--red-dark); }
-  .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
-  .btn-secondary { background:var(--card2); color:var(--text); border:1px solid var(--border); border-radius:10px; padding:11px 22px; font-size:.88rem; font-weight:500; font-family:inherit; cursor:pointer; transition:all .2s; }
-  .btn-secondary:hover { border-color:var(--red); color:var(--red); }
-
-  /* PROGRESS */
-  .progress-bar { height:4px; background:var(--border); border-radius:4px; overflow:hidden; margin-top:14px; display:none; }
-  .progress-bar.show { display:block; }
-  .progress-fill { height:100%; background:linear-gradient(90deg, var(--red), var(--accent)); border-radius:4px; width:0; transition:width .4s ease; }
-
-  /* FILE LIST */
-  .file-list { margin-top:16px; display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto; }
-  .file-item { background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:.85rem; cursor:grab; }
-  .file-item .fname { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .file-item .fsize { color:var(--muted); font-size:.78rem; white-space:nowrap; }
-  .file-item .del-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:2px 6px; border-radius:4px; transition:color .15s; }
-  .file-item .del-btn:hover { color:#e84; }
-  .drag-handle { color:var(--muted); cursor:grab; margin-right:4px; }
-
-  /* RESULT */
-  .result-box { background:rgba(232,52,26,.08); border:1px solid rgba(232,52,26,.3); border-radius:12px; padding:20px; margin-top:18px; display:none; text-align:center; }
-  .result-box.show { display:block; }
-  .result-box h4 { font-family:'Syne',sans-serif; color:var(--red); margin-bottom:8px; }
-  .result-box p { color:var(--muted); font-size:.85rem; margin-bottom:14px; }
-  .btn-download { background:var(--red); color:#fff; border:none; border-radius:8px; padding:11px 26px; font-size:.9rem; font-weight:600; font-family:'Syne',sans-serif; cursor:pointer; text-decoration:none; display:inline-block; transition:background .2s; }
-  .btn-download:hover { background:var(--red-dark); }
-
-  /* IMAGE PREVIEW GRID */
-  .img-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-top:16px; }
-  .img-thumb { border-radius:8px; overflow:hidden; border:1px solid var(--border); aspect-ratio:1; position:relative; }
-  .img-thumb img { width:100%; height:100%; object-fit:cover; }
-  .img-thumb .pg-num { position:absolute; bottom:4px; right:6px; background:rgba(0,0,0,.7); color:#fff; font-size:.7rem; padding:1px 5px; border-radius:4px; }
-  .img-thumb .dl-btn { position:absolute; top:4px; right:4px; background:var(--red); border:none; color:#fff; width:24px; height:24px; border-radius:50%; cursor:pointer; font-size:.75rem; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .2s; }
-  .img-thumb:hover .dl-btn { opacity:1; }
-
-  /* CHECKBOX GRID for page selection */
-  .page-check-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(60px,1fr)); gap:8px; margin-top:12px; max-height:160px; overflow-y:auto; }
-  .page-check { display:flex; flex-direction:column; align-items:center; gap:4px; }
-  .page-check input { accent-color:var(--red); width:18px; height:18px; cursor:pointer; }
-  .page-check span { font-size:.72rem; color:var(--muted); }
-
-  /* TOAST */
-  .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--card2); border:1px solid var(--border); color:var(--text); padding:12px 24px; border-radius:30px; font-size:.88rem; opacity:0; pointer-events:none; transition:all .3s; z-index:999; }
-  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-  /* FOOTER */
-  footer { border-top:1px solid var(--border); padding:40px; text-align:center; color:var(--muted); font-size:.85rem; }
-  footer a { color:var(--muted); text-decoration:none; }
-  footer a:hover { color:var(--text); }
-  .footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:var(--text); margin-bottom:8px; }
-
-  @media(max-width:640px) {
-    nav { padding:14px 20px; }
-    .nav-links { display:none; }
-    .hero { padding:50px 20px 40px; }
-    .section { padding:0 20px 60px; }
-    .modal { padding:24px; }
+    --primary: #e74c3c;
+    --primary-dark: #c0392b;
+    --primary-light: #ff6b6b;
+    --dark: #1a1a2e;
+    --dark2: #16213e;
+    --card-bg: #ffffff;
+    --text: #333333;
+    --text-light: #666666;
+    --border: #e8e8e8;
+    --bg: #f5f6fa;
+    --nav-bg: #1a1a2e;
+    --footer-bg: #1a1a2e;
   }
 
-  /* ROTATION CONTROLS */
-  .rotation-btns { display:flex; gap:8px; flex-wrap:wrap; }
-  .rotation-btns button { flex:1; min-width:80px; }
+  html { scroll-behavior: smooth; }
 
-  /* SPLIT CONTROLS */
-  .split-tabs { display:flex; gap:8px; margin-bottom:18px; }
-  .split-tab { flex:1; padding:9px; border-radius:8px; border:1px solid var(--border); background:var(--card2); color:var(--muted); cursor:pointer; font-size:.85rem; text-align:center; transition:all .2s; }
-  .split-tab.active { background:var(--red); color:#fff; border-color:var(--red); }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ===== LOADING OVERLAY ===== */
+  #loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #loading-overlay.hidden { opacity: 0; visibility: hidden; }
+
+  .loading-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .loading-logo svg { width: 50px; height: 50px; }
+  .loading-logo span {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 2px;
+  }
+  .loading-logo span em {
+    color: var(--primary);
+    font-style: normal;
+  }
+
+  .loading-text {
+    color: #ccc;
+    font-size: 15px;
+    letter-spacing: 1px;
+    animation: pulse 1.5s infinite;
+  }
+
+  .loading-bar-wrap {
+    width: 220px;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .loading-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), #ff9a9e);
+    border-radius: 99px;
+    animation: loadbar 1.4s ease forwards;
+  }
+
+  @keyframes loadbar { to { width: 100%; } }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ===== NAVBAR ===== */
+  nav {
+    background: var(--nav-bg);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    height: 62px;
+    gap: 0;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-right: 30px;
+    flex-shrink: 0;
+  }
+  .nav-logo svg { width: 32px; height: 32px; }
+  .nav-logo-text {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 2px;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  .nav-logo-text span:first-child { color: var(--primary); font-size: 13px; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .nav-links > li { position: relative; }
+
+  .nav-links > li > a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .nav-links > li > a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .nav-links > li > a .arrow {
+    font-size: 10px;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .nav-links > li:hover > a .arrow { transform: rotate(180deg); }
+
+  /* Dropdown */
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    min-width: 220px;
+    padding: 8px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    z-index: 500;
+  }
+  .nav-links > li:hover .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+  .dropdown a {
+    display: block;
+    padding: 9px 18px;
+    font-size: 13.5px;
+    color: var(--text);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+  }
+  .dropdown a:hover { background: #fff5f5; color: var(--primary); }
+
+  /* Hamburger */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    margin-left: auto;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    display: none;
+    background: #16213e;
+    padding: 10px 20px 20px;
+  }
+  .mobile-menu.open { display: block; }
+  .mobile-menu a {
+    display: block;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    padding: 10px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .mobile-menu a:hover { color: var(--primary); }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    padding: 60px 20px 70px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(231,76,60,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, rgba(52,152,219,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero-inner { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
+
+  .hero h1 {
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .hero h1 span { color: var(--primary); }
+
+  .hero p {
+    font-size: 15.5px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.75;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  /* ===== TOOLS GRID ===== */
+  .tools-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 20px 60px;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 22px;
+  }
+
+  .tool-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 26px 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1.5px solid var(--border);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), #ff9a9e);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .tool-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); border-color: transparent; }
+  .tool-card:hover::before { transform: scaleX(1); }
+
+  .card-icon {
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    border: 1.5px solid #ffd4d4;
+  }
+
+  .tool-card h2 {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.3;
+  }
+
+  .tool-card p {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  .card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 4px;
+    transition: gap 0.2s;
+  }
+  .tool-card:hover .card-btn { gap: 10px; }
+  .card-btn svg { width: 14px; height: 14px; }
+
+  /* ===== OTHER LINKS ===== */
+  .other-links {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+  }
+  .other-links h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+  .other-links-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .other-links-grid a {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .other-links-grid a:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--footer-bg);
+    padding: 48px 20px 28px;
+    color: rgba(255,255,255,0.7);
+  }
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .footer-brand { display: flex; flex-direction: column; gap: 16px; }
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .footer-logo svg { width: 36px; height: 36px; }
+  .footer-logo span {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 2px;
+  }
+  .footer-logo span em { color: var(--primary); font-style: normal; }
+
+  .footer-social { display: flex; flex-direction: column; gap: 10px; }
+  .footer-social p { font-size: 13px; color: rgba(255,255,255,0.55); }
+  .social-icons { display: flex; gap: 12px; }
+  .social-icons a {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    text-decoration: none;
+  }
+  .social-icons a:hover { background: var(--primary); }
+  .social-icons svg { width: 18px; height: 18px; }
+
+  .footer-links { display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a {
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-size: 13.5px;
+    transition: color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .footer-links a:hover { color: #fff; }
+  .footer-links a::before { content: '→'; font-size: 11px; color: var(--primary); }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 24px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+  }
+  .footer-bottom .heart { color: var(--primary); }
+  .footer-flag { display: inline-flex; align-items: center; gap: 6px; }
+  .flag-emoji { font-size: 20px; }
+
+  .footer-policies { display: flex; gap: 16px; flex-wrap: wrap; }
+  .footer-policies a {
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    font-size: 12px;
+    transition: color 0.2s;
+  }
+  .footer-policies a:hover { color: rgba(255,255,255,0.8); }
+  .footer-policies span { color: rgba(255,255,255,0.2); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero { padding: 44px 16px 52px; }
+    .tools-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tool-card { padding: 18px 16px; }
+    .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+  }
+
+  @media (max-width: 520px) {
+    .tools-grid { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* Page fade-in */
+  .page-wrap { animation: fadeIn 0.5s ease 0.2s both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* Stagger cards */
+  .tool-card:nth-child(1) { animation-delay: 0.05s; }
+  .tool-card:nth-child(2) { animation-delay: 0.10s; }
+  .tool-card:nth-child(3) { animation-delay: 0.15s; }
+  .tool-card:nth-child(4) { animation-delay: 0.20s; }
+  .tool-card:nth-child(5) { animation-delay: 0.25s; }
+  .tool-card:nth-child(6) { animation-delay: 0.30s; }
+  .tool-card:nth-child(n+7) { animation-delay: 0.35s; }
+  .tool-card { animation: cardIn 0.45s ease both; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 </style>
 </head>
 <body>
 
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="loading-logo">
+    <!-- Pi7 SVG Logo (simplified) -->
+    <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="50" height="50" rx="12" fill="#e74c3c"/>
+      <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="22" font-weight="900" font-family="Arial">P7</text>
+    </svg>
+    <span><em>Pi7</em> PDF TOOL</span>
+  </div>
+  <div class="loading-text">Magic at Work... &nbsp;✨&nbsp; Crafting the PDF!</div>
+  <div class="loading-bar-wrap">
+    <div class="loading-bar"></div>
+  </div>
+</div>
+
+<!-- PAGE WRAP -->
+<div class="page-wrap">
+
+<!-- NAVBAR -->
 <nav>
-  <a href="#" class="logo"><span>PDF</span> Toolkit</a>
-  <div class="nav-links">
-    <a href="#" onclick="openTool('merge')">Gabung PDF</a>
-    <a href="#" onclick="openTool('compress')">Kompres PDF</a>
-    <a href="#" onclick="openTool('split')">Pisahkan PDF</a>
-    <a href="#" onclick="openTool('img2pdf')">Foto ke PDF</a>
-    <a href="#" onclick="openTool('pdf2jpg')">PDF ke JPG</a>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="50" height="50" rx="10" fill="#e74c3c"/>
+        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="20" font-weight="900" font-family="Arial">P7</text>
+      </svg>
+      <span class="nav-logo-text">
+        <span>PDF TOOL</span>
+        <span style="color:#fff;font-size:15px;">Pi7</span>
+      </span>
+    </a>
+
+    <ul class="nav-links">
+      <li>
+        <a href="#">Menggabungkan PDF</a>
+      </li>
+      <li>
+        <a href="#">Kompres PDF <span class="arrow">▾</span></a>
+        <div class="dropdown">
+          <a href="#">Kompres PDF 100kb</a>
+          <a href="#">Kompres PDF 200kb</a>
+          <a href="#">Kompres PDF 500kb</a>
+          <a href="#">Kompres PDF 1MB</a>
+          <a href="#">Kompres PDF 2MB</a>
+          <a href="#">Kompres PDF ke ukuran apa pun</a>
+        </div>
+      </li>
+      <li><a href="#">Memperbesar Ukuran PDF</a></li>
+      <li><a href="#">Memperkecil Ukuran PDF</a></li>
+      <li><a href="#">Foto Ke PDF</a></li>
+    </ul>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#">Menggabungkan PDF</a>
+    <a href="#">Kompres PDF 100kb</a>
+    <a href="#">Kompres PDF 200kb</a>
+    <a href="#">Kompres PDF 500kb</a>
+    <a href="#">Kompres PDF 1MB</a>
+    <a href="#">Kompres PDF 2MB</a>
+    <a href="#">Kompres PDF ke ukuran apa pun</a>
+    <a href="#">Memperbesar Ukuran PDF</a>
+    <a href="#">Memperkecil Ukuran PDF</a>
+    <a href="#">Foto Ke PDF</a>
   </div>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
-  <div class="badge">100% Gratis · Tanpa Upload Server · Aman di Browser</div>
-  <h1>Kompres & Edit<br><em>Berkas PDF</em><br>Online Gratis</h1>
-  <p>Semua alat PDF yang Anda butuhkan dalam satu platform. Proses langsung di browser — file Anda tidak pernah meninggalkan perangkat Anda.</p>
+  <div class="hero-inner">
+    <h1>Kompres dan Edit Berkas PDF<br><span>| Pi7 PDF Tool</span></h1>
+    <p>Pi7 PDF Tool adalah kumpulan alat daring seperti Kompresor PDF dan alat konversi PDF (PDF ke JPG, dll). Dengan alat ini, Anda dapat mengompres pdf Anda ke ukuran yang diinginkan seperti 100kb, 200kb, 300kb, dan lain-lain. Pi7 adalah platform yang aman, terpercaya, dan daring untuk memproses berkas PDF.</p>
+  </div>
 </section>
 
-<div class="section">
-  <div class="section-title">Alat Populer</div>
-  <div class="tools-grid" id="toolsGrid"></div>
-</div>
+<!-- TOOLS GRID -->
+<section class="tools-section">
+  <div class="tools-grid">
 
+    <a href="#" class="tool-card">
+      <div class="card-icon">🔗</div>
+      <h2>Menggabungkan PDF</h2>
+      <p>Gabungkan PDF dengan mudah dan aman dengan Pi7 PDF Tool. Unggah, atur, edit, dan gabungkan beberapa PDF menjadi 1 PDF online tanpa server, gratis dan mudah digunakan.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">📐</div>
+      <h2>Ubah Ukuran PDF</h2>
+      <p>Ubah ukuran PDF Anda ke 1MB, 2MB, 300KB, atau 100KB secara instan dengan Pi7 PDF Tool. Kompresi tak terbatas dengan keamanan terbaik untuk pekerjaan, pendaftaran, atau portal pemerintah.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">📉</div>
+      <h2>Memperkecil Ukuran PDF</h2>
+      <p>Memperkecil ukuran PDF dengan cepat dan mudah menggunakan Pi7 PDF Tool. Ideal untuk pengiriman online seperti lamaran kerja dan pendaftaran.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">📈</div>
+      <h2>Memperbesar Ukuran PDF</h2>
+      <p>Apakah Anda pernah mengalami kesulitan ketika ukuran dokumen PDF Anda terlalu kecil? Dengan Pi7 PDF Tool, Anda dapat dengan mudah memperbesar ukuran PDF Anda agar sesuai dengan kebutuhan Anda.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">✂️</div>
+      <h2>Pisahkan PDF</h2>
+      <p>Pisahkan PDF online gratis & aman di browser. Tanpa upload, tanpa batasan. Split PDF per halaman, range, atau ukuran. Cepat, fleksibel, dan mudah!</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">📝</div>
+      <h2>Konversi PDF ke Word</h2>
+      <p>Konversi PDF ke Word gratis, cepat, dan aman dengan Pi7 PDF Tool. Tanpa watermark, tanpa batas, dan file otomatis terhapus dalam 20 menit.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">🖼️</div>
+      <h2>Foto ke PDF</h2>
+      <p>Ubah foto ke PDF gratis dan tanpa batas. Dukungan JPG, PNG, HEIC, WEBP. Aman, tanpa upload ke server. Praktis untuk lamaran kerja & pendaftaran online.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">🔄</div>
+      <h2>PDF ke JPG</h2>
+      <p>Ubah PDF ke JPG dengan cepat dan aman. Konversi halaman penuh atau ekstrak gambar dari PDF. Gratis, mudah, dan file dihapus otomatis setelah 20 menit.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">🗑️</div>
+      <h2>Hapus halaman PDF</h2>
+      <p>Hapus halaman PDF dengan mudah dan cepat tanpa upload ke server. Edit, crop, rotate, dan gabungkan PDF langsung di browser. Aman, gratis, dan tanpa batas!</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">✂️</div>
+      <h2>Potong PDF</h2>
+      <p>Potong PDF online secara gratis, cepat, dan aman tanpa unggah file. Gunakan Pemotong PDF Pi7 untuk pangkas halaman PDF langsung di browser tanpa batas ukuran.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">🔁</div>
+      <h2>Putar PDF</h2>
+      <p>Putar halaman PDF daring dalam hitungan detik - putar satu halaman atau seluruh dokumen PDF langsung di peramban Anda. 100% gratis, aman, tanpa unggahan, tanpa batasan dengan Pi7 PDF Tool.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">🗂️</div>
+      <h2>Gabung pdf dan foto</h2>
+      <p>Gabungkan PDF dan foto dengan mudah menggunakan Pi7 PDF Tool. Alat cepat, aman, dan gratis untuk mengatur, mengedit, dan menggabungkan dokumen menjadi satu PDF.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">💾</div>
+      <h2>Kompres PDF 100kb</h2>
+      <p>Kompres PDF ke 100KB dengan mudah menggunakan Pi7 PDF Tool. Kurangi ukuran file untuk berbagi dengan cepat. Solusi online yang cepat dan user-friendly.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">💾</div>
+      <h2>Kompres PDF 200kb</h2>
+      <p>Kompres PDF hingga 200KB dengan mudah menggunakan Pi7 PDF Tool gratis. Ubah ukuran file PDF untuk portal online dengan batasan 200KB.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">💾</div>
+      <h2>Kompres PDF 500kb</h2>
+      <p>Kompres PDF ke Ukuran 500KB Gratis - Gunakan Pi7 PDF Tool untuk Lamaran Kerja, Pendaftaran, dan lainnya. Solusi Cepat dan Efisien untuk Ukuran PDF yang Sesuai.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">💾</div>
+      <h2>Kompres PDF 1000kb</h2>
+      <p>Kompres PDF 1000 KB gratis langsung di browser tanpa upload ke server. Aman, cepat, tanpa batasan ukuran file. Coba sekarang di Pi7 PDF Tool!</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">💾</div>
+      <h2>Kompres PDF 1mb</h2>
+      <p>Tingkatkan efisiensi dengan Pi7 PDF Tool: kompres PDF ke 1MB. Mudah, gratis, dan tanpa kehilangan kualitas. Sempurna untuk lamaran pekerjaan &amp; pendaftaran.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">💾</div>
+      <h2>Kompres PDF 2mb</h2>
+      <p>Kompres PDF ke 2MB dengan cepat dan mudah menggunakan Pi7 PDF Tool. Segera unggah dan sesuaikan ukuran dokumen Anda untuk pengajuan online yang lancar!</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+    <a href="#" class="tool-card">
+      <div class="card-icon">⚙️</div>
+      <h2>Kompres PDF ke ukuran apa pun</h2>
+      <p>Kompres PDF ke ukuran 150kb, 300kb, 400kb, atau sesuai kebutuhan dengan mudah menggunakan Pi7 PDF Tool. Hemat waktu saat mengirimkan dokumen ke portal online favorit Anda.</p>
+      <span class="card-btn">Buka Alat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+    </a>
+
+  </div>
+</section>
+
+<!-- OTHER LINKS -->
+<section class="other-links">
+  <h3>Tautan Lainnya</h3>
+  <div class="other-links-grid">
+    <a href="#">Ubah JPG ke PDF</a>
+    <a href="#">kompres pdf 100kb</a>
+    <a href="#">kompres pdf 200kb</a>
+    <a href="#">PDF ke JPG</a>
+    <a href="#">PDF ke Word</a>
+    <a href="#">Hapus Halaman PDF</a>
+    <a href="#">Potong PDF</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
-  <div class="footer-logo">⚡ PDF Toolkit</div>
-  <p style="margin-bottom:12px">Alat PDF online gratis. Semua proses dilakukan di browser Anda.</p>
-  <p><a href="#">Kebijakan Privasi</a> · <a href="#">Syarat Penggunaan</a></p>
-  <p style="margin-top:12px">Dibuat dengan ♥</p>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="50" height="50" rx="10" fill="#e74c3c"/>
+          <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="20" font-weight="900" font-family="Arial">P7</text>
+        </svg>
+        <span><em>Pi7</em> PDF TOOL</span>
+      </div>
+      <div class="footer-social">
+        <p>Ikuti Kami Di Platform Sosial</p>
+        <div class="social-icons">
+          <a href="https://www.youtube.com/channel/UCMLxXimXD6CY8xvZrRJys7A" target="_blank" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M23.5 6.7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.7 2.4 12 2.4 12 2.4s-4.7 0-7.4.2c-.6.1-1.9.1-3 1.3C.7 4.7.4 6.7.4 6.7S.1 9 .1 11.3v2.1c0 2.3.3 4.6.3 4.6s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2 2.4.2 10.1.3 10.1.3s4.7 0 7.4-.2c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.3.3-4.6v-2.1c0-2.3-.3-4.6-.3-4.6zM9.7 15.5V8.1l8.1 3.7-8.1 3.7z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/pi7code" target="_blank" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M24 12.1C24 5.4 18.6 0 12 0S0 5.4 0 12.1c0 6 4.4 11 10.1 11.9v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9v2.2h3.3l-.5 3.5H14v8.4C19.6 23 24 18.1 24 12.1z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-links">
+      <a href="#">Menggabungkan PDF</a>
+      <a href="#">Kompres PDF</a>
+      <a href="#">Foto ke PDF</a>
+      <a href="#">PDF ke JPG</a>
+      <a href="#">Pisahkan PDF</a>
+      <a href="#">Konversi PDF ke Word</a>
+      <a href="#">Putar PDF</a>
+      <a href="#">Hapus halaman PDF</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-policies">
+      <a href="#">Kebijakan pribadi</a>
+      <span>|</span>
+      <a href="#">Syarat Penggunaan</a>
+      <span>|</span>
+      <a href="#">Versi bahasa Inggris</a>
+    </div>
+    <div>
+      Dibuat Dengan <span class="heart">♥</span> Untuk
+      <span class="footer-flag">
+        <span class="flag-emoji">🇮🇩</span>
+      </span>
+    </div>
+  </div>
 </footer>
 
-<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
-  <div class="modal" id="modalContent"></div>
-</div>
-<div class="toast" id="toast"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</div><!-- end page-wrap -->
 
 <script>
-// ========== TOOLS DATA ==========
-const TOOLS = [
-  { id:'compress', icon:'🗜️', name:'Kompres PDF', desc:'Kurangi ukuran PDF ke 100KB, 200KB, 500KB, 1MB, atau ukuran kustom tanpa kehilangan banyak kualitas.' },
-  { id:'merge', icon:'🔗', name:'Gabungkan PDF', desc:'Gabungkan beberapa file PDF menjadi satu dokumen. Atur urutan dengan drag & drop.' },
-  { id:'split', icon:'✂️', name:'Pisahkan PDF', desc:'Pisahkan PDF per halaman, rentang halaman tertentu, atau bagi menjadi beberapa file.' },
-  { id:'rotate', icon:'🔄', name:'Putar PDF', desc:'Putar halaman PDF 90°, 180°, atau 270°. Putar satu halaman atau seluruh dokumen.' },
-  { id:'delete', icon:'🗑️', name:'Hapus Halaman PDF', desc:'Hapus halaman yang tidak diinginkan dari PDF Anda dengan mudah dan cepat.' },
-  { id:'pdf2jpg', icon:'🖼️', name:'PDF ke JPG', desc:'Konversi setiap halaman PDF menjadi gambar JPG berkualitas tinggi.' },
-  { id:'img2pdf', icon:'📄', name:'Foto ke PDF', desc:'Ubah foto JPG, PNG, atau WEBP menjadi satu file PDF. Mendukung banyak foto sekaligus.' },
-  { id:'crop', icon:'✂️', name:'Potong PDF', desc:'Potong margin atau area tertentu dari halaman PDF secara presisi.' },
-  { id:'resize', icon:'📐', name:'Ubah Ukuran PDF', desc:'Ubah ukuran halaman PDF ke A4, A3, Letter, atau dimensi kustom.' },
-];
-
-// Render cards
-const grid = document.getElementById('toolsGrid');
-TOOLS.forEach(t => {
-  grid.innerHTML += `
-  <a class="tool-card" href="#" onclick="openTool('${t.id}');return false;">
-    <div class="tool-icon">${t.icon}</div>
-    <h3>${t.name}</h3>
-    <p>${t.desc}</p>
-    <div class="open-btn">Buka Alat <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  </a>`;
-});
-
-// ========== MODAL ==========
-let currentFiles = [];
-let pdfLib = null;
-
-function openTool(id) {
-  const overlay = document.getElementById('modalOverlay');
-  const mc = document.getElementById('modalContent');
-  const t = TOOLS.find(x=>x.id===id);
-  if(!t) return;
-  mc.innerHTML = buildTool(id, t);
-  overlay.classList.add('open');
-  setupTool(id);
-}
-
-function handleOverlayClick(e) {
-  if(e.target === document.getElementById('modalOverlay')) closeModal();
-}
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-  currentFiles = [];
-}
-
-// ========== TOOL HTML BUILDERS ==========
-function buildTool(id, t) {
-  const base = `<button class="modal-close" onclick="closeModal()">✕</button><h2>${t.icon} ${t.name}</h2><div class="subtitle">${t.desc}</div>`;
-
-  if(id==='compress') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept=".pdf"><div class="dropzone-icon">📂</div><h4>Klik atau seret file PDF ke sini</h4><p>Mendukung satu file PDF</p></div>
-    <div id="fileInfo" style="display:none;margin-top:12px;font-size:.85rem;color:var(--muted)"></div>
-    <div class="controls">
-      <div>
-        <label class="ctrl-label">Target Ukuran:</label>
-        <div class="row">
-          <select id="targetPreset" onchange="updateCustom()">
-            <option value="100">100 KB</option><option value="200">200 KB</option>
-            <option value="300">300 KB</option><option value="500">500 KB</option>
-            <option value="1000">1 MB (1000 KB)</option><option value="2000">2 MB</option>
-            <option value="custom">Kustom...</option>
-          </select>
-          <div id="customBox" style="display:none">
-            <input type="number" id="customKB" placeholder="KB" min="10" max="50000" value="300">
-          </div>
-        </div>
-      </div>
-      <div>
-        <label class="ctrl-label">Kualitas Gambar: <span id="qualVal">70</span>%</label>
-        <input type="range" id="qualRange" min="10" max="100" value="70" oninput="document.getElementById('qualVal').textContent=this.value">
-      </div>
-    </div>
-    <button class="btn-primary" id="actionBtn" onclick="doCompress()" disabled>🗜️ Kompres PDF</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div class="result-box" id="resultBox"><h4>✅ Berhasil Dikompres!</h4><p id="resultInfo"></p><a id="dlLink" class="btn-download">⬇ Unduh PDF Terkompresi</a></div>`;
-
-  if(id==='merge') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept=".pdf" multiple><div class="dropzone-icon">📂</div><h4>Klik atau seret beberapa file PDF</h4><p>Pilih 2 atau lebih file PDF</p></div>
-    <div class="file-list" id="fileList"></div>
-    <button class="btn-primary" id="actionBtn" onclick="doMerge()" disabled style="margin-top:14px">🔗 Gabungkan PDF</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div class="result-box" id="resultBox"><h4>✅ PDF Berhasil Digabungkan!</h4><p id="resultInfo"></p><a id="dlLink" class="btn-download">⬇ Unduh PDF Gabungan</a></div>`;
-
-  if(id==='split') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept=".pdf"><div class="dropzone-icon">📂</div><h4>Klik atau seret file PDF</h4><p>Satu file PDF</p></div>
-    <div id="splitOptions" style="display:none;margin-top:18px">
-      <div class="split-tabs">
-        <div class="split-tab active" id="tab-all" onclick="setSplitMode('all')">Semua Halaman</div>
-        <div class="split-tab" id="tab-range" onclick="setSplitMode('range')">Rentang Halaman</div>
-      </div>
-      <div id="rangeInput" style="display:none">
-        <label class="ctrl-label">Contoh: 1-3, 5, 7-9</label>
-        <input type="text" id="pageRange" placeholder="1-3, 5, 7-9">
-      </div>
-    </div>
-    <button class="btn-primary" id="actionBtn" onclick="doSplit()" disabled>✂️ Pisahkan PDF</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div class="result-box" id="resultBox"><h4>✅ PDF Berhasil Dipisahkan!</h4><p id="resultInfo"></p><div id="splitFiles"></div></div>`;
-
-  if(id==='rotate') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept=".pdf"><div class="dropzone-icon">📂</div><h4>Klik atau seret file PDF</h4><p>Satu file PDF</p></div>
-    <div id="rotateOptions" style="display:none;margin-top:18px">
-      <div class="controls">
-        <div>
-          <label class="ctrl-label">Putaran:</label>
-          <div class="rotation-btns">
-            <button class="btn-secondary active-rot" id="rot90" onclick="setRot(90)">↻ 90°</button>
-            <button class="btn-secondary" id="rot180" onclick="setRot(180)">↕ 180°</button>
-            <button class="btn-secondary" id="rot270" onclick="setRot(270)">↺ 270°</button>
-          </div>
-        </div>
-        <div>
-          <label class="ctrl-label">Terapkan ke:</label>
-          <select id="rotTarget">
-            <option value="all">Semua Halaman</option>
-            <option value="odd">Halaman Ganjil</option>
-            <option value="even">Halaman Genap</option>
-            <option value="custom">Halaman Tertentu</option>
-          </select>
-        </div>
-        <div id="rotCustom" style="display:none">
-          <input type="text" id="rotPages" placeholder="Contoh: 1, 3, 5-7">
-        </div>
-      </div>
-    </div>
-    <button class="btn-primary" id="actionBtn" onclick="doRotate()" disabled>🔄 Putar PDF</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div class="result-box" id="resultBox"><h4>✅ PDF Berhasil Diputar!</h4><p id="resultInfo"></p><a id="dlLink" class="btn-download">⬇ Unduh PDF</a></div>`;
-
-  if(id==='delete') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept=".pdf"><div class="dropzone-icon">📂</div><h4>Klik atau seret file PDF</h4><p>Satu file PDF</p></div>
-    <div id="deleteOptions" style="display:none;margin-top:18px">
-      <label class="ctrl-label">Pilih halaman yang ingin DIHAPUS:</label>
-      <div class="page-check-grid" id="pageCheckGrid"></div>
-      <p style="font-size:.78rem;color:var(--muted);margin-top:8px">Centang halaman yang ingin dihapus</p>
-    </div>
-    <button class="btn-primary" id="actionBtn" onclick="doDelete()" disabled>🗑️ Hapus Halaman</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div class="result-box" id="resultBox"><h4>✅ Halaman Berhasil Dihapus!</h4><p id="resultInfo"></p><a id="dlLink" class="btn-download">⬇ Unduh PDF</a></div>`;
-
-  if(id==='pdf2jpg') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept=".pdf"><div class="dropzone-icon">📂</div><h4>Klik atau seret file PDF</h4><p>Satu file PDF</p></div>
-    <div class="controls" style="margin-top:16px">
-      <div>
-        <label class="ctrl-label">Kualitas JPG: <span id="jpgQualVal">90</span>%</label>
-        <input type="range" id="jpgQual" min="40" max="100" value="90" oninput="document.getElementById('jpgQualVal').textContent=this.value">
-      </div>
-      <div>
-        <label class="ctrl-label">Skala Render:</label>
-        <select id="renderScale">
-          <option value="1.5">Normal (150 DPI)</option>
-          <option value="2" selected>Tinggi (200 DPI)</option>
-          <option value="3">Sangat Tinggi (300 DPI)</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-primary" id="actionBtn" onclick="doPdf2Jpg()" disabled>🖼️ Konversi ke JPG</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div id="jpgResults" style="margin-top:16px"></div>`;
-
-  if(id==='img2pdf') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept="image/*" multiple><div class="dropzone-icon">🖼️</div><h4>Klik atau seret foto ke sini</h4><p>JPG, PNG, WEBP — pilih beberapa sekaligus</p></div>
-    <div class="file-list" id="fileList"></div>
-    <div class="controls" style="margin-top:14px">
-      <div>
-        <label class="ctrl-label">Ukuran Halaman:</label>
-        <select id="pageSize">
-          <option value="A4">A4 (210 × 297 mm)</option>
-          <option value="A3">A3 (297 × 420 mm)</option>
-          <option value="Letter">Letter (216 × 279 mm)</option>
-          <option value="fit">Sesuaikan dengan Gambar</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-primary" id="actionBtn" onclick="doImg2Pdf()" disabled>📄 Buat PDF</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div class="result-box" id="resultBox"><h4>✅ PDF Berhasil Dibuat!</h4><p id="resultInfo"></p><a id="dlLink" class="btn-download">⬇ Unduh PDF</a></div>`;
-
-  if(id==='crop') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept=".pdf"><div class="dropzone-icon">📂</div><h4>Klik atau seret file PDF</h4><p>Satu file PDF</p></div>
-    <div id="cropOptions" style="display:none;margin-top:18px">
-      <label class="ctrl-label">Potong Margin (dalam poin PDF, 1pt ≈ 0.35mm):</label>
-      <div class="row" style="margin-top:8px">
-        <div><label class="ctrl-label" style="font-size:.78rem">Atas</label><input type="number" id="cropTop" value="0" min="0"></div>
-        <div><label class="ctrl-label" style="font-size:.78rem">Bawah</label><input type="number" id="cropBottom" value="0" min="0"></div>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <div><label class="ctrl-label" style="font-size:.78rem">Kiri</label><input type="number" id="cropLeft" value="0" min="0"></div>
-        <div><label class="ctrl-label" style="font-size:.78rem">Kanan</label><input type="number" id="cropRight" value="0" min="0"></div>
-      </div>
-      <div style="margin-top:12px">
-        <label class="ctrl-label">Terapkan ke:</label>
-        <select id="cropTarget">
-          <option value="all">Semua Halaman</option>
-          <option value="custom">Halaman Tertentu</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn-primary" id="actionBtn" onclick="doCrop()" disabled>✂️ Potong PDF</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div class="result-box" id="resultBox"><h4>✅ PDF Berhasil Dipotong!</h4><p id="resultInfo"></p><a id="dlLink" class="btn-download">⬇ Unduh PDF</a></div>`;
-
-  if(id==='resize') return base + `
-    <div class="dropzone" id="dz"><input type="file" id="fileIn" accept=".pdf"><div class="dropzone-icon">📂</div><h4>Klik atau seret file PDF</h4><p>Satu file PDF</p></div>
-    <div class="controls" style="margin-top:16px">
-      <div>
-        <label class="ctrl-label">Ukuran Tujuan:</label>
-        <select id="resizeTarget" onchange="updateResizeCustom()">
-          <option value="A4">A4 (595 × 842 pt)</option>
-          <option value="A3">A3 (842 × 1191 pt)</option>
-          <option value="Letter">Letter (612 × 792 pt)</option>
-          <option value="custom">Kustom...</option>
-        </select>
-      </div>
-      <div id="resizeCustom" style="display:none">
-        <div class="row">
-          <div><label class="ctrl-label" style="font-size:.78rem">Lebar (pt)</label><input type="number" id="resizeW" value="595" min="100"></div>
-          <div><label class="ctrl-label" style="font-size:.78rem">Tinggi (pt)</label><input type="number" id="resizeH" value="842" min="100"></div>
-        </div>
-      </div>
-    </div>
-    <button class="btn-primary" id="actionBtn" onclick="doResize()" disabled>📐 Ubah Ukuran</button>
-    <div class="progress-bar" id="progBar"><div class="progress-fill" id="progFill"></div></div>
-    <div class="result-box" id="resultBox"><h4>✅ Ukuran Berhasil Diubah!</h4><p id="resultInfo"></p><a id="dlLink" class="btn-download">⬇ Unduh PDF</a></div>`;
-
-  return base + `<p>Coming soon...</p>`;
-}
-
-// ========== SETUP TOOL (Event Listeners) ==========
-let rotDeg = 90;
-let splitMode = 'all';
-
-function setupTool(id) {
-  currentFiles = [];
-  const dz = document.getElementById('dz');
-  const fi = document.getElementById('fileIn');
-  if(!dz || !fi) return;
-
-  fi.addEventListener('change', e => handleFiles(id, Array.from(e.target.files)));
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleFiles(id, Array.from(e.dataTransfer.files)); });
-
-  if(id==='rotate') {
-    document.getElementById('rotTarget').addEventListener('change', function(){
-      document.getElementById('rotCustom').style.display = this.value==='custom' ? 'block':'none';
-    });
-  }
-  if(id==='resize') {
-    document.getElementById('resizeTarget').addEventListener('change', function(){
-      document.getElementById('resizeCustom').style.display = this.value==='custom' ? 'flex':'none';
-    });
-  }
-}
-
-async function handleFiles(id, files) {
-  if(['compress','split','rotate','delete','pdf2jpg','crop','resize'].includes(id)) {
-    const f = files.find(f=>f.type==='application/pdf' || f.name.endsWith('.pdf'));
-    if(!f) { showToast('Pilih file PDF!'); return; }
-    currentFiles = [f];
-    const dz = document.getElementById('dz');
-    dz.querySelector('h4').textContent = f.name;
-    dz.querySelector('p').textContent = formatSize(f.size);
-    const fi = document.getElementById('fileInfo');
-    if(fi) { fi.style.display='block'; fi.textContent = `📄 ${f.name} — ${formatSize(f.size)}`; }
-    document.getElementById('actionBtn').disabled = false;
-    if(id==='rotate') document.getElementById('rotateOptions').style.display='block';
-    if(id==='split') document.getElementById('splitOptions').style.display='block';
-    if(id==='crop') document.getElementById('cropOptions').style.display='block';
-    if(id==='delete') { await loadDeleteOptions(f); }
-  } else if(id==='merge') {
-    const pdfs = files.filter(f=>f.type==='application/pdf'||f.name.endsWith('.pdf'));
-    if(!pdfs.length) { showToast('Pilih file PDF!'); return; }
-    currentFiles.push(...pdfs);
-    renderFileList('merge');
-    document.getElementById('actionBtn').disabled = currentFiles.length < 2;
-  } else if(id==='img2pdf') {
-    const imgs = files.filter(f=>f.type.startsWith('image/'));
-    if(!imgs.length) { showToast('Pilih file gambar!'); return; }
-    currentFiles.push(...imgs);
-    renderFileList('img2pdf');
-    document.getElementById('actionBtn').disabled = false;
-  }
-}
-
-async function loadDeleteOptions(file) {
-  const buf = await file.arrayBuffer();
-  const pdfjsLib = window['pdfjs-dist/build/pdf'];
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const doc = await pdfjsLib.getDocument({data: new Uint8Array(buf)}).promise;
-  const n = doc.numPages;
-  const grid = document.getElementById('pageCheckGrid');
-  if(!grid) return;
-  grid.innerHTML = '';
-  for(let i=1;i<=n;i++) {
-    grid.innerHTML += `<div class="page-check"><input type="checkbox" id="pc${i}" value="${i}"><span>Hal. ${i}</span></div>`;
-  }
-  document.getElementById('deleteOptions').style.display='block';
-}
-
-function renderFileList(id) {
-  const list = document.getElementById('fileList');
-  if(!list) return;
-  list.innerHTML = '';
-  currentFiles.forEach((f,i) => {
-    const item = document.createElement('div');
-    item.className = 'file-item';
-    item.setAttribute('draggable','true');
-    item.setAttribute('data-idx',i);
-    item.innerHTML = `<span class="drag-handle">⠿</span><span class="fname">📄 ${f.name}</span><span class="fsize">${formatSize(f.size)}</span><button class="del-btn" onclick="removeFile(${i},'${id}')">✕</button>`;
-    list.appendChild(item);
+  // Loading overlay
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.getElementById('loading-overlay').classList.add('hidden');
+    }, 1500);
   });
-}
 
-function removeFile(idx, id) {
-  currentFiles.splice(idx,1);
-  renderFileList(id);
-  if(id==='merge') document.getElementById('actionBtn').disabled = currentFiles.length < 2;
-  if(id==='img2pdf') document.getElementById('actionBtn').disabled = currentFiles.length < 1;
-}
-
-function updateCustom() {
-  const v = document.getElementById('targetPreset').value;
-  document.getElementById('customBox').style.display = v==='custom'?'block':'none';
-}
-
-function setRot(deg) {
-  rotDeg = deg;
-  ['rot90','rot180','rot270'].forEach(id => document.getElementById(id)?.classList.remove('active-rot'));
-  const el = document.getElementById('rot'+deg);
-  if(el) el.style.borderColor='var(--red)',el.style.color='var(--red)';
-}
-
-function setSplitMode(m) {
-  splitMode = m;
-  ['tab-all','tab-range'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
-  document.getElementById('tab-'+m)?.classList.add('active');
-  document.getElementById('rangeInput').style.display = m==='range'?'block':'none';
-}
-
-function updateResizeCustom() {
-  const v = document.getElementById('resizeTarget').value;
-  document.getElementById('resizeCustom').style.display = v==='custom'?'flex':'none';
-}
-
-// ========== ACTIONS ==========
-
-// COMPRESS
-async function doCompress() {
-  if(!currentFiles.length) return;
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(10);
-
-  const presetVal = document.getElementById('targetPreset').value;
-  const targetKB = presetVal==='custom' ? parseInt(document.getElementById('customKB').value)||300 : parseInt(presetVal);
-  const targetBytes = targetKB * 1024;
-  const quality = parseInt(document.getElementById('qualRange').value)/100;
-
-  try {
-    const file = currentFiles[0];
-    const originalSize = file.size;
-
-    const pdfjsLib = window['pdfjs-dist/build/pdf'];
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-    showProgress(20);
-    const arrayBuf = await file.arrayBuffer();
-    const pdfDoc = await pdfjsLib.getDocument({data: new Uint8Array(arrayBuf)}).promise;
-    const numPages = pdfDoc.numPages;
-
-    const { PDFDocument, rgb } = PDFLib;
-    const newPdf = await PDFDocument.create();
-
-    const scale = quality < 0.5 ? 1.0 : (quality < 0.7 ? 1.2 : 1.5);
-
-    for(let i=1;i<=numPages;i++) {
-      showProgress(20 + (i/numPages)*60);
-      const page = await pdfDoc.getPage(i);
-      const vp = page.getViewport({scale});
-      const canvas = document.createElement('canvas');
-      canvas.width = vp.width; canvas.height = vp.height;
-      const ctx = canvas.getContext('2d');
-      await page.render({canvasContext:ctx, viewport:vp}).promise;
-      const jpgQ = quality;
-      const imgData = canvas.toDataURL('image/jpeg', jpgQ);
-      const imgBytes = await fetch(imgData).then(r=>r.arrayBuffer());
-      const jpgImg = await newPdf.embedJpg(imgBytes);
-      const pg = newPdf.addPage([vp.width, vp.height]);
-      pg.drawImage(jpgImg, {x:0,y:0,width:vp.width,height:vp.height});
-    }
-
-    showProgress(85);
-    const pdfBytes = await newPdf.save();
-    showProgress(100);
-
-    const blob = new Blob([pdfBytes], {type:'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    const dl = document.getElementById('dlLink');
-    dl.href = url;
-    dl.download = 'compressed_' + file.name;
-    document.getElementById('resultInfo').textContent = `Ukuran asli: ${formatSize(originalSize)} → Ukuran baru: ${formatSize(pdfBytes.byteLength)} (${Math.round(pdfBytes.byteLength/originalSize*100)}% dari asli)`;
-    showResult();
-  } catch(e) {
-    showToast('Terjadi kesalahan: ' + e.message);
-    console.error(e);
-  }
-  btn.disabled = false;
-}
-
-// MERGE
-async function doMerge() {
-  if(currentFiles.length < 2) return;
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(5);
-  try {
-    const { PDFDocument } = PDFLib;
-    const merged = await PDFDocument.create();
-    for(let i=0;i<currentFiles.length;i++) {
-      showProgress(5 + (i/currentFiles.length)*85);
-      const buf = await currentFiles[i].arrayBuffer();
-      const doc = await PDFDocument.load(buf);
-      const pages = await merged.copyPages(doc, doc.getPageIndices());
-      pages.forEach(p => merged.addPage(p));
-    }
-    showProgress(95);
-    const bytes = await merged.save();
-    showProgress(100);
-    const blob = new Blob([bytes],{type:'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    const dl = document.getElementById('dlLink');
-    dl.href = url; dl.download = 'merged.pdf';
-    const totalOrig = currentFiles.reduce((a,b)=>a+b.size,0);
-    document.getElementById('resultInfo').textContent = `${currentFiles.length} file digabungkan → ${formatSize(bytes.byteLength)}`;
-    showResult();
-  } catch(e) { showToast('Error: '+e.message); console.error(e); }
-  btn.disabled = false;
-}
-
-// SPLIT
-async function doSplit() {
-  if(!currentFiles.length) return;
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(5);
-  try {
-    const { PDFDocument } = PDFLib;
-    const buf = await currentFiles[0].arrayBuffer();
-    const srcDoc = await PDFDocument.load(buf);
-    const total = srcDoc.getPageCount();
-
-    let pages = [];
-    if(splitMode==='all') {
-      pages = Array.from({length:total},(_,i)=>[i]);
+  // Hamburger toggle
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', function() {
+    mobileMenu.classList.toggle('open');
+    const spans = hamburger.querySelectorAll('span');
+    if (mobileMenu.classList.contains('open')) {
+      spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+      spans[1].style.opacity = '0';
+      spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
     } else {
-      const rangeStr = document.getElementById('pageRange').value;
-      const groups = parsePageRanges(rangeStr, total);
-      pages = groups.map(g=>g.map(n=>n-1));
+      spans[0].style.transform = '';
+      spans[1].style.opacity = '';
+      spans[2].style.transform = '';
     }
-
-    showProgress(20);
-    const container = document.getElementById('splitFiles');
-    container.innerHTML = '';
-    const resultBox = document.getElementById('resultBox');
-    resultBox.classList.add('show');
-    document.getElementById('resultInfo').textContent = `Memisahkan menjadi ${pages.length} file...`;
-
-    for(let i=0;i<pages.length;i++) {
-      showProgress(20 + (i/pages.length)*70);
-      const newDoc = await PDFDocument.create();
-      const copied = await newDoc.copyPages(srcDoc, pages[i]);
-      copied.forEach(p=>newDoc.addPage(p));
-      const bytes = await newDoc.save();
-      const blob = new Blob([bytes],{type:'application/pdf'});
-      const url = URL.createObjectURL(blob);
-      const fname = splitMode==='all' ? `halaman_${pages[i][0]+1}.pdf` : `bagian_${i+1}.pdf`;
-      container.innerHTML += `<a href="${url}" download="${fname}" class="btn-download" style="display:block;margin-bottom:8px;text-align:center">⬇ ${fname} (${formatSize(bytes.byteLength)})</a>`;
-    }
-    showProgress(100);
-    document.getElementById('resultInfo').textContent = `${pages.length} file berhasil dibuat`;
-  } catch(e) { showToast('Error: '+e.message); console.error(e); }
-  btn.disabled = false;
-}
-
-// ROTATE
-async function doRotate() {
-  if(!currentFiles.length) return;
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(10);
-  try {
-    const { PDFDocument, degrees } = PDFLib;
-    const buf = await currentFiles[0].arrayBuffer();
-    const doc = await PDFDocument.load(buf);
-    const n = doc.getPageCount();
-    const target = document.getElementById('rotTarget').value;
-    const customPages = target==='custom' ? parsePageRanges(document.getElementById('rotPages').value, n).flat() : null;
-
-    for(let i=0;i<n;i++) {
-      showProgress(10 + (i/n)*80);
-      const pg = doc.getPage(i);
-      let apply = false;
-      if(target==='all') apply=true;
-      else if(target==='odd') apply=(i%2===0);
-      else if(target==='even') apply=(i%2===1);
-      else if(target==='custom') apply=customPages.includes(i+1);
-      if(apply) {
-        const cur = pg.getRotation().angle;
-        pg.setRotation(degrees((cur+rotDeg)%360));
-      }
-    }
-    showProgress(90);
-    const bytes = await doc.save();
-    showProgress(100);
-    const blob = new Blob([bytes],{type:'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    const dl = document.getElementById('dlLink');
-    dl.href = url; dl.download = 'rotated_'+currentFiles[0].name;
-    document.getElementById('resultInfo').textContent = `${n} halaman diproses, putaran ${rotDeg}°`;
-    showResult();
-  } catch(e) { showToast('Error: '+e.message); console.error(e); }
-  btn.disabled = false;
-}
-
-// DELETE PAGES
-async function doDelete() {
-  if(!currentFiles.length) return;
-  const checkboxes = document.querySelectorAll('#pageCheckGrid input[type=checkbox]:checked');
-  if(!checkboxes.length) { showToast('Centang halaman yang ingin dihapus!'); return; }
-  const toDelete = new Set(Array.from(checkboxes).map(c=>parseInt(c.value)-1));
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(10);
-  try {
-    const { PDFDocument } = PDFLib;
-    const buf = await currentFiles[0].arrayBuffer();
-    const src = await PDFDocument.load(buf);
-    const newDoc = await PDFDocument.create();
-    const total = src.getPageCount();
-    const keep = [];
-    for(let i=0;i<total;i++) if(!toDelete.has(i)) keep.push(i);
-    if(!keep.length) { showToast('Tidak bisa menghapus semua halaman!'); btn.disabled=false; return; }
-    showProgress(40);
-    const copied = await newDoc.copyPages(src, keep);
-    copied.forEach(p=>newDoc.addPage(p));
-    showProgress(80);
-    const bytes = await newDoc.save();
-    showProgress(100);
-    const blob = new Blob([bytes],{type:'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    const dl = document.getElementById('dlLink');
-    dl.href = url; dl.download = 'edited_'+currentFiles[0].name;
-    document.getElementById('resultInfo').textContent = `${toDelete.size} halaman dihapus, tersisa ${keep.length} halaman`;
-    showResult();
-  } catch(e) { showToast('Error: '+e.message); console.error(e); }
-  btn.disabled = false;
-}
-
-// PDF TO JPG
-async function doPdf2Jpg() {
-  if(!currentFiles.length) return;
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(5);
-  try {
-    const pdfjsLib = window['pdfjs-dist/build/pdf'];
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const buf = await currentFiles[0].arrayBuffer();
-    const pdfDoc = await pdfjsLib.getDocument({data: new Uint8Array(buf)}).promise;
-    const n = pdfDoc.numPages;
-    const scale = parseFloat(document.getElementById('renderScale').value);
-    const qual = parseInt(document.getElementById('jpgQual').value)/100;
-    const container = document.getElementById('jpgResults');
-    container.innerHTML = `<div class="img-grid" id="imgGrid"></div><div style="margin-top:14px;text-align:center"><button class="btn-primary" id="dlAllBtn" style="width:auto;padding:12px 30px" onclick="downloadAllJpgs()">⬇ Unduh Semua JPG</button></div>`;
-    const grid = document.getElementById('imgGrid');
-    window._jpgBlobs = [];
-    for(let i=1;i<=n;i++) {
-      showProgress(5 + (i/n)*90);
-      const page = await pdfDoc.getPage(i);
-      const vp = page.getViewport({scale});
-      const canvas = document.createElement('canvas');
-      canvas.width = vp.width; canvas.height = vp.height;
-      const ctx = canvas.getContext('2d');
-      await page.render({canvasContext:ctx,viewport:vp}).promise;
-      const dataUrl = canvas.toDataURL('image/jpeg', qual);
-      window._jpgBlobs.push({dataUrl, name:`halaman_${i}.jpg`});
-      const thumb = document.createElement('div');
-      thumb.className = 'img-thumb';
-      thumb.innerHTML = `<img src="${dataUrl}"><span class="pg-num">${i}</span><button class="dl-btn" onclick="downloadJpg(${i-1})">⬇</button>`;
-      grid.appendChild(thumb);
-    }
-    showProgress(100);
-    showToast(`${n} halaman berhasil dikonversi!`);
-  } catch(e) { showToast('Error: '+e.message); console.error(e); }
-  btn.disabled = false;
-}
-window.downloadJpg = function(idx) {
-  const {dataUrl,name} = window._jpgBlobs[idx];
-  const a = document.createElement('a'); a.href=dataUrl; a.download=name; a.click();
-};
-window.downloadAllJpgs = function() {
-  window._jpgBlobs.forEach(({dataUrl,name}) => {
-    const a = document.createElement('a'); a.href=dataUrl; a.download=name; a.click();
   });
-};
 
-// IMG TO PDF
-async function doImg2Pdf() {
-  if(!currentFiles.length) return;
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(5);
-  try {
-    const { PDFDocument } = PDFLib;
-    const pageSize = document.getElementById('pageSize').value;
-    const sizes = {A4:[595,842],A3:[842,1191],Letter:[612,792]};
-    const newPdf = await PDFDocument.create();
-
-    for(let i=0;i<currentFiles.length;i++) {
-      showProgress(5 + (i/currentFiles.length)*85);
-      const f = currentFiles[i];
-      const buf = await f.arrayBuffer();
-      let img;
-      if(f.type==='image/png') img = await newPdf.embedPng(buf);
-      else img = await newPdf.embedJpg(buf);
-      const { width:iw, height:ih } = img.scale(1);
-      let pw, ph;
-      if(pageSize==='fit') { pw=iw; ph=ih; }
-      else { [pw,ph]=sizes[pageSize]; }
-      const scale = Math.min(pw/iw, ph/ih);
-      const dw=iw*scale, dh=ih*scale;
-      const pg = newPdf.addPage([pw,ph]);
-      pg.drawImage(img,{x:(pw-dw)/2, y:(ph-dh)/2, width:dw, height:dh});
+  // Close mobile menu when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+      mobileMenu.classList.remove('open');
+      const spans = hamburger.querySelectorAll('span');
+      spans[0].style.transform = '';
+      spans[1].style.opacity = '';
+      spans[2].style.transform = '';
     }
-    showProgress(92);
-    const bytes = await newPdf.save();
-    showProgress(100);
-    const blob = new Blob([bytes],{type:'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    const dl = document.getElementById('dlLink');
-    dl.href = url; dl.download = 'images.pdf';
-    document.getElementById('resultInfo').textContent = `${currentFiles.length} gambar → ${formatSize(bytes.byteLength)}`;
-    showResult();
-  } catch(e) { showToast('Error: '+e.message); console.error(e); }
-  btn.disabled = false;
-}
-
-// CROP
-async function doCrop() {
-  if(!currentFiles.length) return;
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(10);
-  try {
-    const { PDFDocument } = PDFLib;
-    const buf = await currentFiles[0].arrayBuffer();
-    const doc = await PDFDocument.load(buf);
-    const n = doc.getPageCount();
-    const top = parseInt(document.getElementById('cropTop').value)||0;
-    const bot = parseInt(document.getElementById('cropBottom').value)||0;
-    const left = parseInt(document.getElementById('cropLeft').value)||0;
-    const right = parseInt(document.getElementById('cropRight').value)||0;
-
-    for(let i=0;i<n;i++) {
-      showProgress(10 + (i/n)*80);
-      const pg = doc.getPage(i);
-      const {width,height} = pg.getSize();
-      pg.setCropBox(left, bot, width-left-right, height-top-bot);
-    }
-    showProgress(90);
-    const bytes = await doc.save();
-    showProgress(100);
-    const blob = new Blob([bytes],{type:'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    document.getElementById('dlLink').href=url;
-    document.getElementById('dlLink').download='cropped_'+currentFiles[0].name;
-    document.getElementById('resultInfo').textContent = `${n} halaman dipotong`;
-    showResult();
-  } catch(e) { showToast('Error: '+e.message); console.error(e); }
-  btn.disabled = false;
-}
-
-// RESIZE
-async function doResize() {
-  if(!currentFiles.length) return;
-  const btn = document.getElementById('actionBtn');
-  btn.disabled = true;
-  showProgress(10);
-  try {
-    const { PDFDocument } = PDFLib;
-    const buf = await currentFiles[0].arrayBuffer();
-    const srcDoc = await PDFDocument.load(buf);
-    const newDoc = await PDFDocument.create();
-    const n = srcDoc.getPageCount();
-    const targetSel = document.getElementById('resizeTarget').value;
-    const sizes = {A4:[595,842],A3:[842,1191],Letter:[612,792]};
-    let [tw,th] = targetSel==='custom' ? [parseInt(document.getElementById('resizeW').value)||595, parseInt(document.getElementById('resizeH').value)||842] : sizes[targetSel];
-
-    const copied = await newDoc.copyPages(srcDoc, srcDoc.getPageIndices());
-    for(let i=0;i<copied.length;i++) {
-      showProgress(10 + (i/n)*80);
-      const pg = newDoc.addPage([tw,th]);
-      const {width:ow,height:oh} = copied[i].getSize();
-      const scale = Math.min(tw/ow, th/oh);
-      const dx=(tw-ow*scale)/2, dy=(th-oh*scale)/2;
-      const [emb] = await newDoc.embedPages([copied[i]]);
-      pg.drawPage(emb, {x:dx, y:dy, width:ow*scale, height:oh*scale});
-    }
-    showProgress(90);
-    const bytes = await newDoc.save();
-    showProgress(100);
-    const blob = new Blob([bytes],{type:'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    document.getElementById('dlLink').href=url;
-    document.getElementById('dlLink').download='resized_'+currentFiles[0].name;
-    document.getElementById('resultInfo').textContent = `${n} halaman diubah ke ${targetSel} (${tw}×${th} pt)`;
-    showResult();
-  } catch(e) { showToast('Error: '+e.message); console.error(e); }
-  btn.disabled = false;
-}
-
-// ========== HELPERS ==========
-function showProgress(pct) {
-  const bar = document.getElementById('progBar');
-  const fill = document.getElementById('progFill');
-  if(!bar||!fill) return;
-  bar.classList.add('show');
-  fill.style.width = pct+'%';
-}
-function showResult() {
-  const r = document.getElementById('resultBox');
-  if(r) r.classList.add('show');
-}
-function formatSize(bytes) {
-  if(bytes<1024) return bytes+'B';
-  if(bytes<1024*1024) return (bytes/1024).toFixed(1)+'KB';
-  return (bytes/(1024*1024)).toFixed(2)+'MB';
-}
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 3000);
-}
-function parsePageRanges(str, total) {
-  const result = [];
-  const parts = str.split(',').map(s=>s.trim()).filter(Boolean);
-  for(const p of parts) {
-    if(p.includes('-')) {
-      const [a,b] = p.split('-').map(Number);
-      const group = [];
-      for(let i=a;i<=Math.min(b,total);i++) group.push(i);
-      if(group.length) result.push(group);
-    } else {
-      const n = parseInt(p);
-      if(n>=1&&n<=total) result.push([n]);
-    }
-  }
-  return result.length ? result : Array.from({length:total},(_,i)=>[i+1]);
-}
+  });
 </script>
 </body>
 </html>
