@@ -724,7 +724,7 @@ input[type=range]{accent-color:var(--red);width:100%}
       <button class="btn-download" id="compress-dl">⬇ Unduh PDF</button>
     </div>
     <div class="info-box" style="margin-top:16px">
-      ℹ️ Kompresi dilakukan dengan mengurangi kualitas gambar dan mengoptimalkan struktur PDF. Hasil mungkin sedikit berbeda dari target tergantung konten PDF asli.
+      ℹ️ Kompresi menggunakan algoritma pencarian biner untuk hasil yang akurat mendekati target. Opsi dengan ukuran ≥ file asli akan dinonaktifkan otomatis setelah upload.
     </div>
   </div>
 </div>
@@ -736,13 +736,13 @@ input[type=range]{accent-color:var(--red);width:100%}
     <h1 class="tool-page-title">📐 Ubah Ukuran PDF</h1>
     <div class="input-group">
       <label>Target Ukuran:</label>
-      <div class="compress-opts">
-        <div class="compress-opt selected" onclick="selectResizeOpt(this,100)"><div class="opt-size">100KB</div></div>
-        <div class="compress-opt" onclick="selectResizeOpt(this,200)"><div class="opt-size">200KB</div></div>
-        <div class="compress-opt" onclick="selectResizeOpt(this,300)"><div class="opt-size">300KB</div></div>
-        <div class="compress-opt" onclick="selectResizeOpt(this,500)"><div class="opt-size">500KB</div></div>
-        <div class="compress-opt" onclick="selectResizeOpt(this,1024)"><div class="opt-size">1MB</div></div>
-        <div class="compress-opt" onclick="selectResizeOpt(this,2048)"><div class="opt-size">2MB</div></div>
+      <div class="compress-opts resize-opts">
+        <div class="compress-opt selected" data-kb="100" onclick="selectResizeOpt(this,100)"><div class="opt-size">100KB</div></div>
+        <div class="compress-opt" data-kb="200" onclick="selectResizeOpt(this,200)"><div class="opt-size">200KB</div></div>
+        <div class="compress-opt" data-kb="300" onclick="selectResizeOpt(this,300)"><div class="opt-size">300KB</div></div>
+        <div class="compress-opt" data-kb="500" onclick="selectResizeOpt(this,500)"><div class="opt-size">500KB</div></div>
+        <div class="compress-opt" data-kb="1024" onclick="selectResizeOpt(this,1024)"><div class="opt-size">1MB</div></div>
+        <div class="compress-opt" data-kb="2048" onclick="selectResizeOpt(this,2048)"><div class="opt-size">2MB</div></div>
       </div>
     </div>
     <div class="upload-zone" id="resize-zone">
@@ -1295,6 +1295,8 @@ let compressTargetKB = 300;
 let compressFiles = [];
 let resizeTargetKB = 300;
 let resizeFiles = [];
+let compressOriginalSizeKB = 0;  // Track original file size for validation
+let resizeOriginalSizeKB = 0;
 
 function selectCompressOpt(el, kb) {
   document.querySelectorAll('#compress-opts .compress-opt').forEach(o => o.classList.remove('selected'));
@@ -1303,44 +1305,77 @@ function selectCompressOpt(el, kb) {
   document.getElementById('compress-custom-wrap').style.display = 'none';
 }
 
+// Disable compress options that are >= original file size
+function updateCompressOptsAvailability() {
+  if (!compressOriginalSizeKB) return;
+  document.querySelectorAll('#compress-opts .compress-opt').forEach(opt => {
+    const kb = parseInt(opt.dataset.kb);
+    if (!kb) return; // custom option
+    if (kb >= compressOriginalSizeKB) {
+      opt.style.opacity = '0.35';
+      opt.style.pointerEvents = 'none';
+      opt.title = `Tidak dapat digunakan: ukuran target (${kb}KB) ≥ ukuran file asli (${Math.round(compressOriginalSizeKB)}KB)`;
+      if (opt.classList.contains('selected')) {
+        opt.classList.remove('selected');
+        compressTargetKB = 0; // reset
+      }
+    } else {
+      opt.style.opacity = '';
+      opt.style.pointerEvents = '';
+      opt.title = '';
+    }
+  });
+  // Auto-select the largest option that's still under original size
+  const validOpts = Array.from(document.querySelectorAll('#compress-opts .compress-opt[data-kb]'))
+    .filter(o => { const kb = parseInt(o.dataset.kb); return kb && kb < compressOriginalSizeKB; });
+  const anySelected = document.querySelector('#compress-opts .compress-opt.selected');
+  if (!anySelected && validOpts.length > 0) {
+    const best = validOpts[validOpts.length - 1];
+    best.classList.add('selected');
+    compressTargetKB = parseInt(best.dataset.kb);
+  }
+}
+
 function selectResizeOpt(el, kb) {
   el.closest('.compress-opts').querySelectorAll('.compress-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   resizeTargetKB = kb;
 }
 
-// Core compression: renders pages via PDF.js at lower quality, rebuilds with pdf-lib
-async function compressPDFToTarget(arrayBuffer, targetKB) {
-  const targetBytes = targetKB * 1024;
-  const pdfLibDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
-  const numPages = pdfLibDoc.getPageCount();
+// Disable resize options >= original size
+function updateResizeOptsAvailability() {
+  if (!resizeOriginalSizeKB) return;
+  document.querySelectorAll('.resize-opts .compress-opt').forEach(opt => {
+    const kb = parseInt(opt.dataset.kb);
+    if (!kb) return;
+    if (kb >= resizeOriginalSizeKB) {
+      opt.style.opacity = '0.35';
+      opt.style.pointerEvents = 'none';
+      opt.title = `Tidak dapat digunakan: ukuran target (${kb >= 1024 ? (kb/1024)+'MB' : kb+'KB'}) ≥ ukuran file asli (${Math.round(resizeOriginalSizeKB)}KB)`;
+      if (opt.classList.contains('selected')) {
+        opt.classList.remove('selected');
+      }
+    } else {
+      opt.style.opacity = '';
+      opt.style.pointerEvents = '';
+      opt.title = '';
+    }
+  });
+}
 
-  // Determine quality based on target size
-  const originalSize = arrayBuffer.byteLength;
-  const ratio = targetBytes / originalSize;
-
-  // If target is bigger than original and we're compressing, just return original
-  if (targetKB > 0 && targetBytes >= originalSize) {
-    notify('PDF sudah lebih kecil dari target!', '');
-    return arrayBuffer;
-  }
-
-  // Calculate scale based on ratio
-  let imgQuality = Math.max(0.05, Math.min(0.92, ratio * 0.9));
-  let scale = Math.max(0.3, Math.min(1.5, Math.sqrt(ratio) * 0.85));
-
-  // Load with PDF.js for rendering
-  const pdfJSDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+// Helper: render all pages at given quality/scale, return result bytes
+async function renderPDFAtQuality(pdfJSDoc, numPages, scale, imgQuality) {
   const newDoc = await PDFLib.PDFDocument.create();
-
   for (let i = 1; i <= numPages; i++) {
     const page = await pdfJSDoc.getPage(i);
     const origVP = page.getViewport({ scale: 1 });
-    const vp = page.getViewport({ scale });
+    // Minimum resolution: at least 400px wide to avoid pecah/blur
+    const minScale = Math.max(scale, 400 / origVP.width);
+    const vp = page.getViewport({ scale: minScale });
     const canvas = document.createElement('canvas');
-    canvas.width = vp.width; canvas.height = vp.height;
+    canvas.width = Math.round(vp.width);
+    canvas.height = Math.round(vp.height);
     await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-
     const dataURL = canvas.toDataURL('image/jpeg', imgQuality);
     const imgData = dataURL.split(',')[1];
     const imgBytes = Uint8Array.from(atob(imgData), c => c.charCodeAt(0));
@@ -1348,35 +1383,100 @@ async function compressPDFToTarget(arrayBuffer, targetKB) {
     const newPage = newDoc.addPage([origVP.width, origVP.height]);
     newPage.drawImage(jpgImg, { x: 0, y: 0, width: origVP.width, height: origVP.height });
   }
-
-  let result = await newDoc.save();
-
-  // If still too big, reduce quality further
-  let attempts = 0;
-  while (result.byteLength > targetBytes && attempts < 6 && targetKB > 0) {
-    imgQuality *= 0.65;
-    scale *= 0.75;
-    if (scale < 0.15) scale = 0.15;
-    if (imgQuality < 0.02) imgQuality = 0.02;
-    const newDoc2 = await PDFLib.PDFDocument.create();
-    for (let i = 1; i <= numPages; i++) {
-      const page = await pdfJSDoc.getPage(i);
-      const origVP = page.getViewport({ scale: 1 });
-      const vp = page.getViewport({ scale });
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(10, vp.width); canvas.height = Math.max(10, vp.height);
-      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-      const dataURL = canvas.toDataURL('image/jpeg', imgQuality);
-      const imgData = dataURL.split(',')[1];
-      const imgBytes = Uint8Array.from(atob(imgData), c => c.charCodeAt(0));
-      const jpgImg = await newDoc2.embedJpg(imgBytes);
-      const newPage = newDoc2.addPage([origVP.width, origVP.height]);
-      newPage.drawImage(jpgImg, { x: 0, y: 0, width: origVP.width, height: origVP.height });
-    }
-    result = await newDoc2.save();
-    attempts++;
-  }
+  const result = await newDoc.save();
   return result.buffer;
+}
+
+// Core compression: binary search on quality to hit target size accurately
+async function compressPDFToTarget(arrayBuffer, targetKB) {
+  const targetBytes = targetKB * 1024;
+  const originalSize = arrayBuffer.byteLength;
+
+  // Block if target >= original size
+  if (targetKB > 0 && targetBytes >= originalSize) {
+    throw new Error(`Ukuran target (${targetKB}KB) harus lebih kecil dari ukuran file asli (${Math.round(originalSize/1024)}KB). Gunakan fitur "Perbesar Ukuran" jika ingin memperbesar.`);
+  }
+
+  const pdfJSDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+  const numPages = pdfJSDoc.numPages;
+  const ratio = targetBytes / originalSize;
+
+  // Phase 1: Binary search on imgQuality (scale fixed at good value)
+  // Scale: keep reasonable resolution, reduce only if really needed
+  let scale = Math.min(1.2, Math.max(0.5, Math.sqrt(ratio) * 1.1));
+  let lo = 0.02, hi = 0.95, bestResult = null, bestSize = Infinity;
+
+  for (let iter = 0; iter < 10; iter++) {
+    const mid = (lo + hi) / 2;
+    const result = await renderPDFAtQuality(pdfJSDoc, numPages, scale, mid);
+    const size = result.byteLength;
+    if (size <= targetBytes) {
+      // Under target — try higher quality (bigger)
+      if (bestResult === null || (size > bestSize && size <= targetBytes)) {
+        bestResult = result;
+        bestSize = size;
+      }
+      lo = mid;
+    } else {
+      // Over target — reduce quality
+      hi = mid;
+    }
+    // Converged enough
+    if (hi - lo < 0.01) break;
+  }
+
+  // Phase 2: If binary search on quality still can't get under target, reduce scale too
+  if (bestResult === null || bestSize > targetBytes) {
+    let scaleSearch = scale;
+    for (let s = 0; s < 8; s++) {
+      scaleSearch *= 0.8;
+      if (scaleSearch < 0.2) scaleSearch = 0.2;
+      // At this scale, find quality via binary search
+      lo = 0.02; hi = 0.92;
+      for (let iter = 0; iter < 8; iter++) {
+        const mid = (lo + hi) / 2;
+        const result = await renderPDFAtQuality(pdfJSDoc, numPages, scaleSearch, mid);
+        const size = result.byteLength;
+        if (size <= targetBytes) {
+          if (bestResult === null || size > bestSize) {
+            bestResult = result;
+            bestSize = size;
+          }
+          lo = mid;
+        } else {
+          hi = mid;
+        }
+        if (hi - lo < 0.015) break;
+      }
+      if (bestResult !== null && bestSize <= targetBytes) break;
+    }
+  }
+
+  // Final: take the best we have; if still over target (extreme case), return closest
+  if (bestResult === null) {
+    bestResult = await renderPDFAtQuality(pdfJSDoc, numPages, 0.2, 0.02);
+  }
+
+  // Fine-tune: if best is well under target, do one more pass to get closer to target
+  // (so result is more accurate, not 50KB when target is 200KB)
+  if (bestSize < targetBytes * 0.7) {
+    // Try to find a quality between current and higher to get closer to target
+    lo = 0.02; hi = 0.95;
+    for (let iter = 0; iter < 8; iter++) {
+      const mid = (lo + hi) / 2;
+      const result = await renderPDFAtQuality(pdfJSDoc, numPages, scale, mid);
+      const size = result.byteLength;
+      if (size <= targetBytes) {
+        if (size > bestSize) { bestResult = result; bestSize = size; }
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+      if (hi - lo < 0.01) break;
+    }
+  }
+
+  return bestResult;
 }
 
 // ---- COMPRESS ----
@@ -1384,11 +1484,16 @@ setupDropZone('compress-zone', 'compress-input', files => {
   compressFiles = Array.from(files).filter(f => f.type === 'application/pdf');
   renderFileList('compress-list', compressFiles, () => {
     compressFiles = [];
+    compressOriginalSizeKB = 0;
     document.getElementById('compress-btn').disabled = true;
     showResult('compress-result', false);
   });
   document.getElementById('compress-btn').disabled = compressFiles.length === 0;
   showResult('compress-result', false);
+  if (compressFiles.length > 0) {
+    compressOriginalSizeKB = compressFiles[0].size / 1024;
+    updateCompressOptsAvailability();
+  }
 });
 
 async function compressPDFs() {
@@ -1444,9 +1549,14 @@ setupDropZone('resize-zone', 'resize-input', files => {
   resizeFiles = Array.from(files).filter(f => f.type === 'application/pdf');
   renderFileList('resize-list', resizeFiles, () => {
     resizeFiles = [];
+    resizeOriginalSizeKB = 0;
     document.getElementById('resize-btn').disabled = true;
   });
   document.getElementById('resize-btn').disabled = resizeFiles.length === 0;
+  if (resizeFiles.length > 0) {
+    resizeOriginalSizeKB = resizeFiles[0].size / 1024;
+    updateResizeOptsAvailability();
+  }
 });
 
 async function resizePDFs() {
@@ -2320,6 +2430,10 @@ function renderFileListWithCb(listId, files, cb) {
     });
     document.getElementById('compress-btn').disabled = compressFiles.length === 0;
     showResult('compress-result', false);
+    if (compressFiles.length > 0) {
+      compressOriginalSizeKB = compressFiles[0].size / 1024;
+      updateCompressOptsAvailability();
+    }
   });
 
   // Resize
@@ -2331,6 +2445,10 @@ function renderFileListWithCb(listId, files, cb) {
       document.getElementById('resize-btn').disabled = resizeFiles.length === 0;
     });
     document.getElementById('resize-btn').disabled = resizeFiles.length === 0;
+    if (resizeFiles.length > 0) {
+      resizeOriginalSizeKB = resizeFiles[0].size / 1024;
+      updateResizeOptsAvailability();
+    }
   });
 
   // PDF2Word
